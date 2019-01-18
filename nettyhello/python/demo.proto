@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message Frame {
+    string messageType = 1;
+    
+    bytes payload = 15;
+}
