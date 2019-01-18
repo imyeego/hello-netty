@@ -1,10 +1,20 @@
 package com.imyeego.protocol;
 
+import com.imyeego.protocol.request.HeartbeatRequestPacket;
+import com.imyeego.protocol.request.LoginRequestPacket;
+import com.imyeego.protocol.request.LogoutRequestPacket;
+import com.imyeego.protocol.request.MessageRequestPacket;
+import com.imyeego.protocol.response.HeartbeatResponsePacket;
+import com.imyeego.protocol.response.LoginResponsePacket;
+import com.imyeego.protocol.response.LogoutResponsePacket;
+import com.imyeego.protocol.response.MessageResponsePacket;
 import com.imyeego.serializer.Serializer;
 import io.netty.buffer.ByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.imyeego.protocol.Command.*;
 
 public class PacketCodec {
 
@@ -18,7 +28,16 @@ public class PacketCodec {
     public PacketCodec() {
         packetTypeMap = new HashMap<>();
 
-        // TODO 向map添加packetType
+        packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
+        packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
+        packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
+        packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
+        packetTypeMap.put(LOGOUT_REQUEST, LogoutRequestPacket.class);
+        packetTypeMap.put(LOGOUT_RESPONSE, LogoutResponsePacket.class);
+
+
+        packetTypeMap.put(HEARTBEAT_REQUEST, HeartbeatRequestPacket.class);
+        packetTypeMap.put(HEARTBEAT_RESPONSE, HeartbeatResponsePacket.class);
 
         serializerMap = new HashMap<>();
         Serializer serializer = Serializer.DEFAULT;
@@ -51,7 +70,6 @@ public class PacketCodec {
 
         // 指令
         byte command = byteBuf.readByte();
-
         // 数据包长度
         int length = byteBuf.readInt();
 
@@ -60,7 +78,6 @@ public class PacketCodec {
 
         Class<? extends Packet> requestType = getRequestType(command);
         Serializer serializer = getSerializer(serializeAlgorithm);
-
         if (requestType != null && serializer != null) {
             return serializer.deserialize(requestType, bytes);
         }
