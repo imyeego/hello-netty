@@ -38,6 +38,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
             response = "Have a good day!\r\n";
             close = true;
         } else {
+            System.out.println(request);
             response = "Did you say '" + request + "'?\r\n";
         }
 
