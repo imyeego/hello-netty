@@ -19,7 +19,7 @@ public class NettyServer {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new NettyServerIntializer());
+                    .childHandler(new ServerInitializer());
 
             ChannelFuture channel = b.bind(9999);
             channel.channel().closeFuture().sync();
