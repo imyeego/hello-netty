@@ -13,7 +13,8 @@ public class TryWith {
 
         double s = 12;
         System.out.println(s);*/
-        System.out.println(readTxt("C:\\Users\\zhongyu\\IdeaProjects\\quickjava\\src\\main\\java\\com\\imyeego\\io\\hello.txt"));
+        System.out.println(System.getProperty("user.dir"));
+//        System.out.println(readTxt("C:\\Users\\zhongyu\\IdeaProjects\\quickjava\\src\\main\\java\\com\\imyeego\\io\\hello.txt"));
 
     }
 
