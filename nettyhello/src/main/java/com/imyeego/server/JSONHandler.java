@@ -4,6 +4,7 @@ import com.imyeego.protocol.Packet;
 import com.imyeego.protocol.request.LoginRequestPacket;
 import com.imyeego.protocol.response.HelloResponsePacket;
 import com.imyeego.protocol.response.LoginResponsePacket;
+import com.imyeego.util.HandlerUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,14 +30,15 @@ public class JSONHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg != null && msg instanceof Packet){
-            LoginRequestPacket packet = (LoginRequestPacket)msg;
-            String username = packet.getUsername();
-            LoginResponsePacket response = new LoginResponsePacket();
-            response.setUserId(UUID.randomUUID().toString().split("-")[0]);
-            response.setUserName(username);
-            response.setReason("chopin");
-            response.setSuccess(true);
-            ctx.writeAndFlush(response);
+            HandlerUtil.getHandlerInstance(msg.getClass().getSimpleName()).handle(msg, ctx);
+//            LoginRequestPacket packet = (LoginRequestPacket)msg;
+//            String username = packet.getUsername();
+//            LoginResponsePacket response = new LoginResponsePacket();
+//            response.setUserId(UUID.randomUUID().toString().split("-")[0]);
+//            response.setUserName(username);
+//            response.setReason("chopin");
+//            response.setSuccess(true);
+//            ctx.writeAndFlush(response);
         }
     }
 

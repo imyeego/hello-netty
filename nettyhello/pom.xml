@@ -57,6 +57,13 @@
             <version>${lombok.version}</version>
         </dependency>
 
+        <!-- freemarker -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.23</version>
+        </dependency>
+
         <!--使用grpc优雅的编译protobuf-->
         <dependency>
             <groupId>com.google.protobuf</groupId>
