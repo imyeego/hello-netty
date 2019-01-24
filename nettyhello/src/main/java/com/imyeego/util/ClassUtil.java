@@ -52,7 +52,7 @@ public class ClassUtil {
 
         List<Class> ret = getClasspathAllClass(findInJar, packages).stream()
                 .filter(c -> !c.isInterface())
-                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+//                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
                 .filter(c -> clazz.isAssignableFrom(c))
                 .collect(Collectors.toList());
 
