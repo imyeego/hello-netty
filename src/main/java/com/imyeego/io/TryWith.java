@@ -1,6 +1,7 @@
 package com.imyeego.io;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class TryWith {
 
@@ -13,7 +14,11 @@ public class TryWith {
 
         double s = 12;
         System.out.println(s);*/
-        System.out.println(System.getProperty("user.dir"));
+//        System.out.println(System.getProperty("user.dir"));
+        String[] classpaths = System.getProperty("java.class.path").split(";");
+
+        Arrays.stream(classpaths).forEach(System.out::println);
+
 //        System.out.println(readTxt("C:\\Users\\zhongyu\\IdeaProjects\\quickjava\\src\\main\\java\\com\\imyeego\\io\\hello.txt"));
 
     }
