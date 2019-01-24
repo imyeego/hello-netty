@@ -3,6 +3,7 @@ package com.imyeego.util;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class ClassUtil {
 
     //运行时的classpath
     private static String[] classPaths;
+    private static String path;
 
     static {
         //windows和*inux路径分隔符不一样
@@ -24,9 +26,12 @@ public class ClassUtil {
         String classPath = System.getProperty("java.class.path");
         if (osName.contains("Windows") || osName.contains("windows")) {
             classPaths = classPath.split(";");
+
         } else {
             classPaths = classPath.split(":");
+
         }
+        path = Arrays.stream(classPaths).filter(s -> !s.endsWith(".jar")).collect(Collectors.toList()).remove(0);
     }
 
     /**
@@ -52,7 +57,7 @@ public class ClassUtil {
 
         List<Class> ret = getClasspathAllClass(findInJar, packages).stream()
                 .filter(c -> !c.isInterface())
-//                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
                 .filter(c -> clazz.isAssignableFrom(c))
                 .collect(Collectors.toList());
 
@@ -66,17 +71,10 @@ public class ClassUtil {
      * @return
      */
     private static List<Class> getClasspathAllClass(boolean findInJar, String... packages) {
-        String[] packagesTemp = new String[packages.length];
-        for (int i = 0; i < packages.length; i++) {
-            packagesTemp[i] = packages[i].replaceAll("\\.", "/");
-        }
-
         List<Class> ret = new LinkedList<>();
 
-        for (String classPath : classPaths) {
-            File file = new File(classPath);
-            ret.addAll(findClass(file, classPath, findInJar, packagesTemp));
-        }
+        File file = new File(path);
+        ret.addAll(findClass(file, path, findInJar, packages));
         return ret;
     }
 
@@ -98,18 +96,18 @@ public class ClassUtil {
             File[] files = file.listFiles();
             if (files != null && files.length > 0) {
                 for (File f : files) {
-                    ret.addAll(findClass(f, classpath, findInJar));
+                    ret.addAll(findClass(f, classpath, findInJar, packages));
                 }
             }
         } else if (file.isFile()) {
             //是普通字节码文件
             String fileName = file.getName();
-            if (fileName.endsWith(".class") && isInPackages(classpath, packages)) {
-                String fullyQualifiedName = getFullyQualifiedName(file, classpath);
+            String fullyQualifiedName = getFullyQualifiedName(file, classpath);
+            if (fileName.endsWith(".class") && isInPackages(fullyQualifiedName, packages)) {
                 try {
                     ret.add(Class.forName(fullyQualifiedName));
                 } catch (ClassNotFoundException e) {
-                    //
+                    e.printStackTrace();
                 }
                 //jar包
             } else if (findInJar && fileName.endsWith(".jar")) {
@@ -121,7 +119,7 @@ public class ClassUtil {
                         String jarClassName = entries.nextElement().getName();
                         //jar包里的字节码文件
                         if (jarClassName.endsWith(".class") && isInPackages(jarClassName, packages)) {
-                            String fullyQualifiedName = jarClassName
+                            fullyQualifiedName = jarClassName
                                     .replace(".class", "")
                                     .replaceAll("/", ".");
                             try {

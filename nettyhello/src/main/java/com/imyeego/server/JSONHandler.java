@@ -31,14 +31,7 @@ public class JSONHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg != null && msg instanceof Packet){
             HandlerUtil.getHandlerInstance(msg.getClass().getSimpleName()).handle(msg, ctx);
-//            LoginRequestPacket packet = (LoginRequestPacket)msg;
-//            String username = packet.getUsername();
-//            LoginResponsePacket response = new LoginResponsePacket();
-//            response.setUserId(UUID.randomUUID().toString().split("-")[0]);
-//            response.setUserName(username);
-//            response.setReason("chopin");
-//            response.setSuccess(true);
-//            ctx.writeAndFlush(response);
+
         }
     }
 
