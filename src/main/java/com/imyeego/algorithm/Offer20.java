@@ -18,7 +18,7 @@ public class Offer20 {
         int[] v2 = new int[]{5, 6, 7, 8};
         int[] v3 = new int[]{9, 10, 11, 12};
         int[] v4 = new int[]{13, 14, 15, 16};
-        final int[][] v = new int[][]{v1, v2, v3, v4};
+        final int[][] v = new int[][]{v1, v2, v3};
 
 //        System.out.println(v.length);
 
@@ -37,14 +37,17 @@ public class Offer20 {
      * @return result one-dimen array
      */
     private static List<Integer> printMatrix(final int[][] v){
-        m = v.length;
+
+        List<Integer> list = new ArrayList<>();
+        if ((m = v.length) == 0) {
+            return list;
+        }
         n = v[0].length;
         int count = m * n;
         int i = 0, j = 0, d = 0;
         int[][] b = new int[m][n];
 
         final int[][] D = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-        List<Integer> list = new ArrayList<>();
         if (m == 0 || n == 0){
             return list;
         }
@@ -63,7 +66,7 @@ public class Offer20 {
     }
 
     private static boolean judge(final int i, final int j, final int[][] b){
-        return i >= 0 && i < n && j >= 0 && j < m && b[i][j] == 0;
+        return i >= 0 && i < m && j >= 0 && j < n && b[i][j] == 0;
     }
 
 
