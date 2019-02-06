@@ -22,7 +22,8 @@ public class Offer16 {
         node4.next = node5;
         node5.next = null;
 
-        ListNode node = reverseList(node1);
+//        ListNode node = reverseList(node1);
+        ListNode node = reverseBetween(node1, 3, 6);
         while (node != null){
             System.out.println(node.val);
             node = node.next;
@@ -50,6 +51,47 @@ public class Offer16 {
 
         return nNode;
     }
+
+    private static ListNode reverseBetween(ListNode head, int m, int n) {
+        if (head == null) {
+            return null;
+        }
+        if (m < 1 || m > n) {
+            return null;
+        }
+        ListNode pNode = head, mNode = null, sNode = null, eNode = null, nNode = null, pNext = null;
+        int i = 1;
+        while (pNode != null) {
+            pNext = pNode.next;
+            if (m != 1) {
+                if (i == m - 1) {
+                    mNode = pNode;
+                }
+                if (i == n) mNode.next = pNode;
+            }
+            if (m == 1 && i == n) eNode = pNode;
+            if (i > m && i <= n) {
+                pNode.next = nNode;
+            }
+
+            if (i == m) {
+                sNode = pNode;
+            }
+
+            if (i == n + 1) sNode.next = pNode;
+            nNode = pNode;
+            pNode = pNext;
+            i ++;
+        }
+
+        if (i - n == 1) sNode.next = null;
+        if (i - n < 1) return null;
+        if (m == 1) {
+            return eNode;
+        }
+        return head;
+    }
+
     static class ListNode{
         int val;
         ListNode next;
