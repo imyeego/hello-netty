@@ -4,7 +4,15 @@ import java.util.function.Supplier;
 
 public class Lambda {
 
+    public int s = 1;
+    public static final String ss = "np";
+
+    static {
+        System.out.println("123");
+    }
+
     public static void main(String[] args) {
+        System.out.println(ss);
 
     }
 
