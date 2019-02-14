@@ -10,7 +10,8 @@ public class Offer47 {
     public static void main(String[] args) {
 //        System.out.println(addWithout(50, 7));
 //        System.out.println(addRecursive(50, 45));
-        System.out.println(subtractRecursive(30, 45));
+//        System.out.println(subtractRecursive(30, 45));
+        System.out.println(multi1(3, 567));
     }
 
     private static int addIterative(int num1, int num2){
@@ -31,5 +32,25 @@ public class Offer47 {
     private static int subtractRecursive(int num1, int num2){
         return addRecursive(num1, addRecursive(~num2, 1));
 
+    }
+
+    private static int multi(int a, int b){
+        int res = 0;
+        for (int i = 0; i < b; i = addIterative(i, 1)) {
+            res = addIterative(res, a);
+        }
+        return res;
+    }
+
+    private static int multi1(int a, int b){
+        int res = 0;
+        while (a != 0){
+            if ((a & 1) != 0) {
+                res += b;
+            }
+            a >>= 1;
+            b <<= 1;
+        }
+        return res;
     }
 }
