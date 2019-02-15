@@ -17,13 +17,17 @@ public class Offer39 {
         TreeNode node2 = new TreeNode(20);
         TreeNode node3 = new TreeNode(15);
         TreeNode node4 = new TreeNode(7);
+        TreeNode node5 = new TreeNode(8);
+        TreeNode node6 = new TreeNode(2);
 
         root.left = node1;
         root.right = node2;
         node2.left = node3;
         node2.right = node4;
+        node4.left = node5;
+        node4.right = node6;
 
-        System.out.println(minDepthIterative(root));
+        System.out.println(isBalanced(root));
     }
     public static int maxDepth(TreeNode root) {
         if (root == null)
@@ -73,5 +77,20 @@ public class Offer39 {
             }
         }
         return -1;
+    }
+
+    /**
+     * balanced binary-tree from LeetCode#110 & Offer#39[附加]
+     * @param root
+     * @return
+     */
+    public static boolean isBalanced(TreeNode root){
+        if (root == null) return true;
+        int leftDepth = maxDepth(root.left);
+        int rightDepth = maxDepth(root.right);
+        if (Math.abs(leftDepth - rightDepth) < 2) {
+            return isBalanced(root.left) && isBalanced(root.right);
+        }
+        return false;
     }
 }
