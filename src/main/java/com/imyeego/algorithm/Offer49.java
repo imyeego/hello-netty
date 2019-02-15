@@ -10,19 +10,19 @@ public class Offer49 {
 
     public static void main(String[] args) {
 
-        String s = "2355576";
+        String s = "  -0012a42";
         System.out.println(str2int(s));
     }
 
 
     /**
-     *
-     * @param string
+     * LeetCode#8
+     * @param str
      * @return
      */
-    private static int str2int(String string){
+    private static int str2int(String str){
         // clear blank space
-        String s = string.trim().replace(" ", "");
+        String s = str.trim();
         if (s.isEmpty()) return 0;
 
         long result = 0, flag = 0;
@@ -39,21 +39,20 @@ public class Offer49 {
             char c = chars[i];
             if (!(c >= '0' && c <= '9')) {
                 if (i == 0) return 0;
+                if (flag == 1) result = -result;
                 break;
             }
             result = 10 * result + c - '0';
-            if (result == Integer.MAX_VALUE && flag == 1 && i == chars.length - 1){
-                return (int) (result - 2 * result);
+            if (result <= Integer.MAX_VALUE && flag == 1 && i == chars.length - 1){
+                return (int) (-result);
             }
             if (result > Integer.MAX_VALUE){
+                if (flag == 1) {
+                    return -Integer.MAX_VALUE - 1;
+                }
                 result = Integer.MAX_VALUE;
-                break;
             }
 
-        }
-
-        if (flag == 1) {
-            return (int) (result == Integer.MAX_VALUE ? result - 2 * result - 1 : result - 2 * result);
         }
         return (int) result;
     }
