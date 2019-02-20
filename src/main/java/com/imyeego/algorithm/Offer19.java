@@ -43,7 +43,7 @@ public class Offer19 {
     public static TreeNode invertTree(TreeNode root) {
         if (root == null) return null;
         TreeNode node = invertTree(root.left);
-        root.left = root.right;
+        root.left = invertTree(root.right);
         root.right = node;
         return root;
     }
