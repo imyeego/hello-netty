@@ -18,6 +18,7 @@ public class Code1 {
 //            System.out.println(res[i]);
 //        }
         System.out.println(res);
+        String string = "";
 
     }
 
