@@ -31,7 +31,7 @@ public class Offer16 {
     }
 
 
-    private static ListNode reverseList(ListNode head){
+    public static ListNode reverseList(ListNode head){
         if (head == null) {
             return null;
         }
@@ -92,12 +92,12 @@ public class Offer16 {
         return head;
     }
 
-    static class ListNode{
-        int val;
-        ListNode next;
-
-        public ListNode(int val) {
-            this.val = val;
-        }
-    }
+//    static class ListNode{
+//        int val;
+//        ListNode next;
+//
+//        public ListNode(int val) {
+//            this.val = val;
+//        }
+//    }
 }
