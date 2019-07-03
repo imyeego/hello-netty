@@ -52,6 +52,7 @@ public class ConcurrentTest {
 //        testGson();
 
 //        testGenerics();
+//        testSwitch();
 
     }
 
@@ -99,8 +100,8 @@ public class ConcurrentTest {
         Socket client = null;
         try {
             client = new Socket();
-//            SocketAddress address = new InetSocketAddress("222.91.163.154", 12789);
-            SocketAddress address = new InetSocketAddress("192.168.10.101", 8888);
+            SocketAddress address = new InetSocketAddress("222.91.163.154", 12789);
+//            SocketAddress address = new InetSocketAddress("192.168.10.101", 8888);
             client.connect(address, 3000);
             client.setSoTimeout(5000);
             //构建IO
@@ -109,7 +110,7 @@ public class ConcurrentTest {
 
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             //向服务器端发送一条消息
-            bw.write(str + "\r\n");
+            bw.write(str2 + "\r\n");
             bw.flush();
 
             //读取服务器返回的消息
@@ -130,7 +131,18 @@ public class ConcurrentTest {
         }
     }
 
-
+    private static void testSwitch() {
+        String i = "liuzhao";
+        switch (i) {
+            case "liuzhao":
+                System.out.println(0);
+            case "Jay Chou":
+                System.out.println(1);
+                break;
+            default:
+                System.out.println("您的输入是 " + i);
+        }
+    }
 
     private static Runnable task = () -> {
         try {
