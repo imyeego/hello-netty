@@ -51,9 +51,7 @@ public class App {
 
     private static <T> void listToSet(List<T> list){
         Set<T> set = new HashSet<>();
-        for(T t : list){
-            set.add(t);
-        }
+        set.addAll(list);
 
         set.iterator().forEachRemaining(t -> System.out.println(t));
     }

@@ -3,6 +3,7 @@ package com.imyeego.frame.concurrent_modification_exception;
 import com.google.gson.*;
 import com.imyeego.frame.bean.Student;
 import com.imyeego.frame.generics.ICallback;
+import com.imyeego.kotlin.Bean;
 import com.sun.istack.internal.NotNull;
 
 import java.io.*;
@@ -48,12 +49,23 @@ public class ConcurrentTest {
 //        String date = format("10月10日");
 //        System.out.println(date);
 
-        testSocket();
+//        String s = "liuzhao";
+//        System.out.println(s.substring(5, 7));
+//        System.out.println(Calendar.getInstance(Locale.CHINA).getTimeInMillis());
+
+
+
+//        testSocket();
 //        testGson();
 
 //        testGenerics();
 //        testSwitch();
 
+    }
+
+
+    private static void testThread() {
+        Thread.yield();
     }
 
     private static void testGenerics() {
@@ -103,7 +115,7 @@ public class ConcurrentTest {
             SocketAddress address = new InetSocketAddress("222.91.163.154", 12789);
 //            SocketAddress address = new InetSocketAddress("192.168.10.101", 8888);
             client.connect(address, 3000);
-            client.setSoTimeout(5000);
+            client.setSoTimeout(5_000);
             //构建IO
             InputStream is = client.getInputStream();
             OutputStream os = client.getOutputStream();
