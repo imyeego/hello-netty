@@ -3,12 +3,12 @@ package com.imyeego.json;
 import com.sun.istack.internal.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class JsonParser {
 
+    @SuppressWarnings("unchecked")
     public <T> T fromJson(String json, Class<T> clazz) {
         Reader reader = new Reader(json);
         char c;
@@ -19,17 +19,18 @@ public class JsonParser {
             return null;
         }
         if (reader.hasNext() && c != '['){
-            ObjectParser objectParser = new ObjectParser(clazz);
-            Object obj = objectParser.parse(reader);
+            ObjectTypeAdapter objectParser = new ObjectTypeAdapter(clazz);
+            Object obj = objectParser.read(reader);
             return (T) obj;
         }
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> List<T> fromJsonList(@NotNull String json, Class<T> clazz) {
         Reader reader = new Reader(json);
         List<T> list = null;
-        ObjectParser parser = new ObjectParser(clazz);
+        ObjectTypeAdapter parser = new ObjectTypeAdapter(clazz);
         char c;
         try {
             c = reader.next();
@@ -44,7 +45,7 @@ public class JsonParser {
         }
         while (c != ']') {
             if (c == '{') {
-                Object obj = parser.parse(reader);
+                Object obj = parser.read(reader);
                 list.add((T) obj);
             }
             reader.skipNext();

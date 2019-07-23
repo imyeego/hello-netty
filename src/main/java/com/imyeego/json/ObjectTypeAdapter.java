@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class ObjectParser implements Parser {
+public class ObjectTypeAdapter implements TypeAdapter {
 
     private static final int START_TAG = -1;
     private static final int OBJECT = 0;
@@ -17,7 +17,7 @@ public class ObjectParser implements Parser {
     private Stack<Integer> stack;
     private Stack<String> nameStack;
 
-    public ObjectParser(Class<?> raw) {
+    public ObjectTypeAdapter(Class<?> raw) {
         this.raw = raw;
         map = new HashMap<>();
         stack = new Stack<>();
@@ -25,7 +25,7 @@ public class ObjectParser implements Parser {
     }
 
     @Override
-    public Object parse(Reader reader) {
+    public Object read(Reader reader) {
         Field[] fields = raw.getDeclaredFields();
         for (Field f : fields){
             String name = f.getName();
@@ -94,6 +94,11 @@ public class ObjectParser implements Parser {
         return instance;
     }
 
+    @Override
+    public String write(Writer writer) {
+        return null;
+    }
+
     private void setValue(Reader reader, Object instance) {
         if (nameStack.isEmpty()){
             return;
@@ -101,11 +106,11 @@ public class ObjectParser implements Parser {
         String name = nameStack.pop();
         Field field = map.get(name);
         if (field != null){
-            Parser p;
+            TypeAdapter p;
             String type = field.getType().getName();
 
             p = ParserFactory.getParserFromType(type);
-            Object obj = p.parse(reader);
+            Object obj = p.read(reader);
 //            Logger.d("value is " + obj);
             try {
                 field.setAccessible(true);

@@ -2,11 +2,11 @@ package com.imyeego.json;
 
 public class ParserFactory {
 
-    public static Parser getParserFromType(String type) {
+    public static TypeAdapter getParserFromType(String type) {
         switch (type) {
             case "boolean":
             case "Java.lang.Boolean":
-                return new BooleanParser();
+                return new BooleanTypeAdapter();
             case "short":
             case "int":
             case "long":
@@ -16,19 +16,19 @@ public class ParserFactory {
             case "java.lang.Short":
             case "java.lang.Byte":
             case "java.math.BigInteger":
-                return new IntegerParser();
+                return new IntegerTypeAdapter();
             case "float":
             case "java.lang.Float":
-                return new FloatParser();
+                return new FloatTypeAdapter();
             case "double":
             case "java.lang.Double":
             case "java.math.BigDecimal":
-                return new DoubleParser();
+                return new DoubleTypeAdapter();
             case "java.lang.String":
-                return new StringParser();
+                return new StringTypeAdapter();
             default:
                 try {
-                    return new ObjectParser(Class.forName(type));
+                    return new ObjectTypeAdapter(Class.forName(type));
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                     return null;
@@ -36,23 +36,23 @@ public class ParserFactory {
         }
     }
 
-    public static Parser getDefaultIntegerParser() {
-        return new IntegerParser();
+    public static TypeAdapter getDefaultIntegerParser() {
+        return new IntegerTypeAdapter();
     }
 
-    public static Parser getDefaultBooleanParser() {
-        return new BooleanParser();
+    public static TypeAdapter getDefaultBooleanParser() {
+        return new BooleanTypeAdapter();
     }
 
-    public static Parser getDefaultDoubleParser() {
-        return new DoubleParser();
+    public static TypeAdapter getDefaultDoubleParser() {
+        return new DoubleTypeAdapter();
     }
 
-    public static Parser getDefaultFloatParser() {
-        return new FloatParser();
+    public static TypeAdapter getDefaultFloatParser() {
+        return new FloatTypeAdapter();
     }
 
-    public static Parser getObjectParser(Class<?> clazz) {
-        return new ObjectParser(clazz);
+    public static TypeAdapter getObjectParser(Class<?> clazz) {
+        return new ObjectTypeAdapter(clazz);
     }
 }
