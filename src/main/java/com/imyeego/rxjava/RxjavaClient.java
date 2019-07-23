@@ -1,6 +1,8 @@
 package com.imyeego.rxjava;
 
 import rx.Observable;
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,11 +21,8 @@ public class RxjavaClient {
 //        print(list);
         System.out.println("----------------------------------");
 //        just(list);
-        String a = "ab";
-        String b = "a" + "b";
-        String c = new String("ab");
-        System.out.println(a == c);
-
+//        equals();
+        schedulers();
     }
 
 
@@ -40,5 +39,20 @@ public class RxjavaClient {
         }
     }
 
+    private static void schedulers() {
+        Scheduler.Worker worker = Schedulers.computation().createWorker();
+        worker.schedule(() -> {
+
+        });
+    }
+
+    private static void equals() {
+        String a = "ab";
+        String b = "a" + "b";
+        String c = new String("ab");
+        String d = new String("ab");
+        System.out.println(c == d);
+        System.out.println(c.equals(d));
+    }
 
 }

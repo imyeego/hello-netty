@@ -1,6 +1,7 @@
 package com.imyeego.frame.concurrent_modification_exception;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import com.imyeego.frame.bean.Student;
 import com.imyeego.frame.generics.ICallback;
 import com.imyeego.kotlin.Bean;
@@ -16,10 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ConcurrentTest {
     private static volatile int i = 0;
@@ -56,7 +54,7 @@ public class ConcurrentTest {
 
 
 //        testSocket();
-//        testGson();
+        testGson();
 
 //        testGenerics();
 //        testSwitch();
@@ -84,7 +82,8 @@ public class ConcurrentTest {
     }
 
     private static void testGson() {
-        String response = "[{\"result\":\"success\"}]";
+//        String response = "[{\"result\":\"success\"}]";
+        String response = "[{\"id\":0,\"name\":\"Jess\",\"gender\":1,\"grade\":\"3\",\"classTh\":null}]";
         Student student = new Student();
         student.setId(0L);
         student.setName("Jess");
@@ -92,17 +91,30 @@ public class ConcurrentTest {
         student.setGrade("3");
 //        student.setClassTh("2");
 //        student.setIsUpload("");
-        GsonBuilder builder = new GsonBuilder();
-        builder.excludeFieldsWithoutExposeAnnotation();
+        GsonBuilder builder = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .serializeNulls();
 //        builder.serializeNulls();
-        String json = builder.create().toJson(student);
-        JsonParser jsonParser = new JsonParser();
-        JsonArray jsonElements = jsonParser.parse(response).getAsJsonArray();//获取JsonArray对象
-        for (JsonElement element : jsonElements) {
-            Student bean = builder.create().fromJson(element, Student.class);
-            System.out.println(bean.getName());
+//        String json = builder.create().toJson(student);
+//        JsonParser jsonParser = new JsonParser();
+//        JsonArray jsonElements = jsonParser.parse(response).getAsJsonArray();//获取JsonArray对象
+//        for (JsonElement element : jsonElements) {
+//            Student bean = builder.create().fromJson(element, Student.class);
+//            System.out.println(bean.getName());
+//        }
+//        System.out.println(json);
+        List<Student> list = builder.create().fromJson(response, new TypeToken<List<Student>>(){}.getType());
+//        List<Student> list = null;
+//        for (Student s : list) {
+//            System.out.println(s.getName());
+//        }
+        try {
+            Class<?> clazz = Class.forName("java.lang.Integer");
+            System.out.println(clazz.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        System.out.println(json);
+
     }
 
     private static void testSocket() {

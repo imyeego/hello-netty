@@ -65,4 +65,16 @@ public class Student {
     public void setIsUpload(String isUpload) {
         this.isUpload = isUpload;
     }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", gender=" + gender +
+                ", grade='" + grade + '\'' +
+                ", classTh='" + classTh + '\'' +
+                ", isUpload='" + isUpload + '\'' +
+                '}';
+    }
 }
