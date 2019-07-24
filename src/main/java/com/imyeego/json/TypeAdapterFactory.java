@@ -1,22 +1,23 @@
 package com.imyeego.json;
 
-public class ParserFactory {
+public class TypeAdapterFactory {
 
-    public static TypeAdapter getParserFromType(String type) {
+    public static TypeAdapter getAdapterFromType(String type) {
         switch (type) {
             case "boolean":
             case "Java.lang.Boolean":
                 return new BooleanTypeAdapter();
             case "short":
             case "int":
-            case "long":
             case "byte":
-            case "java.lang.Long":
             case "java.lang.Integer":
             case "java.lang.Short":
             case "java.lang.Byte":
             case "java.math.BigInteger":
                 return new IntegerTypeAdapter();
+            case "long":
+            case "java.lang.Long":
+                return new LongTypeAdapter();
             case "float":
             case "java.lang.Float":
                 return new FloatTypeAdapter();
@@ -38,6 +39,9 @@ public class ParserFactory {
 
     public static TypeAdapter getDefaultIntegerParser() {
         return new IntegerTypeAdapter();
+    }
+    public static TypeAdapter getDefaultLongParser() {
+        return new LongTypeAdapter();
     }
 
     public static TypeAdapter getDefaultBooleanParser() {

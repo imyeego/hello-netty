@@ -1,6 +1,6 @@
 package com.imyeego.json;
 
-public interface TypeAdapter {
+public interface TypeAdapter<T> {
     Object read(Reader reader);
-    String write(Writer writer);
+    String write(Writer writer, T value);
 }

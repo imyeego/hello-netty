@@ -1,6 +1,7 @@
 package com.imyeego.json;
 
-import com.sun.istack.internal.NotNull;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,7 @@ public class JsonParser {
 
     @SuppressWarnings("unchecked")
     public <T> T fromJson(String json, Class<T> clazz) {
+        if (json == null) return null;
         Reader reader = new Reader(json);
         char c;
         try {
@@ -27,7 +29,10 @@ public class JsonParser {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> List<T> fromJsonList(@NotNull String json, Class<T> clazz) {
+    public <T> List<T> fromJsonList(String json, Class<T> clazz) {
+        if (json == null) {
+            return Collections.EMPTY_LIST;
+        }
         Reader reader = new Reader(json);
         List<T> list = null;
         ObjectTypeAdapter parser = new ObjectTypeAdapter(clazz);
@@ -60,4 +65,15 @@ public class JsonParser {
 
         return list;
     }
+
+    public String toJson(Object src) {
+        if (src == null) {
+            return "";
+        }
+        ObjectTypeAdapter adapter = new ObjectTypeAdapter(src.getClass());
+        Writer writer = new Writer();
+        return adapter.write(writer, src);
+    }
+
+
 }

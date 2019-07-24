@@ -2,10 +2,11 @@ package com.imyeego.json;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-public class ObjectTypeAdapter implements TypeAdapter {
+public class ObjectTypeAdapter implements TypeAdapter<Object> {
 
     private static final int START_TAG = -1;
     private static final int OBJECT = 0;
@@ -26,11 +27,7 @@ public class ObjectTypeAdapter implements TypeAdapter {
 
     @Override
     public Object read(Reader reader) {
-        Field[] fields = raw.getDeclaredFields();
-        for (Field f : fields){
-            String name = f.getName();
-            map.put(name, f);
-        }
+        getFields();
 
         Object instance;
         try {
@@ -95,8 +92,43 @@ public class ObjectTypeAdapter implements TypeAdapter {
     }
 
     @Override
-    public String write(Writer writer) {
-        return null;
+    public String write(Writer writer, Object value) {
+        getFields();
+        writer.startObject();
+        Iterator<Map.Entry<String, Field>> it =  map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Field> entry = it.next();
+            Field field = entry.getValue();
+            try {
+                field.setAccessible(true);
+                writeNameAndValue(writer, entry.getKey(), field.get(value));
+                field.setAccessible(false);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        writer.toPrevious();
+        writer.endObject();
+
+        return writer.getString();
+    }
+
+    private void getFields() {
+        Field[] fields = raw.getDeclaredFields();
+        for (Field f : fields) {
+            String name = f.getName();
+            map.put(name, f);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void writeNameAndValue(Writer writer, String name, Object object) {
+        String type = object.getClass().getName();
+        writer.writeName(name);
+        if (!type.isEmpty()) {
+            TypeAdapter p = TypeAdapterFactory.getAdapterFromType(type);
+            p.write(writer, object);
+        }
     }
 
     private void setValue(Reader reader, Object instance) {
@@ -109,7 +141,7 @@ public class ObjectTypeAdapter implements TypeAdapter {
             TypeAdapter p;
             String type = field.getType().getName();
 
-            p = ParserFactory.getParserFromType(type);
+            p = TypeAdapterFactory.getAdapterFromType(type);
             Object obj = p.read(reader);
 //            Logger.d("value is " + obj);
             try {

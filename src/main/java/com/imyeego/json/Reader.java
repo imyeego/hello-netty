@@ -1,24 +1,9 @@
 package com.imyeego.json;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Stack;
-
 public class Reader {
-//    public static final int OBJECT = 0;
-//    public static final int NAME = 1;
 
-//    public static final int T_BRACKET = 0;
-//    public static final int T_QUOTE = 1;
-//    public static final int T_COMMA = 2;
-//    public static final int T_LETTER = 3;
-//    public static final int T_ERROR = -1;
-
-//    private InputStream inputStream;
-//    private InputStreamReader inputStreamReader;
     private char[] buffer;
     private int pos;
-//    private Stack<Integer> stack;
 
     public Reader(String json) {
         buffer = json.toCharArray();
