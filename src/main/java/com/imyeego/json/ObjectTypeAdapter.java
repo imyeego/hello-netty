@@ -93,19 +93,10 @@ public class ObjectTypeAdapter implements TypeAdapter<Object> {
 
     @Override
     public String write(Writer writer, Object value) {
-        getFields();
+        Field[] fields = raw.getDeclaredFields();
         writer.startObject();
-        Iterator<Map.Entry<String, Field>> it =  map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Field> entry = it.next();
-            Field field = entry.getValue();
-            try {
-                field.setAccessible(true);
-                writeNameAndValue(writer, entry.getKey(), field.get(value));
-                field.setAccessible(false);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+        for (Field field : fields) {
+            writeNameAndValue(writer, field, value);
         }
         writer.toPrevious();
         writer.endObject();
@@ -122,13 +113,23 @@ public class ObjectTypeAdapter implements TypeAdapter<Object> {
     }
 
     @SuppressWarnings("unchecked")
-    private void writeNameAndValue(Writer writer, String name, Object object) {
-        String type = object.getClass().getName();
-        writer.writeName(name);
-        if (!type.isEmpty()) {
+    private void writeNameAndValue(Writer writer, Field field, Object src) {
+        writer.writeName(field.getName());
+        String type = field.getType().getName();
+        Object object;
+        try {
+            field.setAccessible(true);
+            object = field.get(src);
             TypeAdapter p = TypeAdapterFactory.getAdapterFromType(type);
-            p.write(writer, object);
+            if (p != null) {
+                p.write(writer, object);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } finally {
+            field.setAccessible(false);
         }
+
     }
 
     private void setValue(Reader reader, Object instance) {
@@ -142,7 +143,10 @@ public class ObjectTypeAdapter implements TypeAdapter<Object> {
             String type = field.getType().getName();
 
             p = TypeAdapterFactory.getAdapterFromType(type);
-            Object obj = p.read(reader);
+            Object obj = null;
+            if (p != null) {
+                obj = p.read(reader);
+            }
 //            Logger.d("value is " + obj);
             try {
                 field.setAccessible(true);
@@ -156,16 +160,20 @@ public class ObjectTypeAdapter implements TypeAdapter<Object> {
     }
 
     private void setNameAndValue(Reader reader, Object instance) {
-        if (stack.peek() == NAME){
-            String name = reader.nextName();
-//            Logger.d("name is " + name);
-            Field field = map.get(name);
-            if (field != null){
-                nameStack.push(name);
-            }
-            stack.pop();
-        }else if (stack.peek() == VALUE){
-            setValue(reader, instance);
+        switch (stack.peek()) {
+            case NAME:
+                String name = reader.nextName();
+//                Logger.d("name is " + name);
+                Field field = map.get(name);
+                if (field != null){
+                    nameStack.push(name);
+                }
+                stack.pop();
+                break;
+            case VALUE:
+                setValue(reader, instance);
+                break;
         }
+
     }
 }
