@@ -1,13 +1,22 @@
 package com.imyeego.json;
 
+import java.util.Stack;
+
 public class Reader {
+
+    private static final int OBJECT = 0;
+    private static final int ARRAY = 1;
 
     private char[] buffer;
     private int pos;
+    private Stack<Integer> stack;
+    private Stack<String> nameStack;
 
     public Reader(String json) {
         buffer = json.toCharArray();
         pos = 0;
+        stack = new Stack<>();
+        nameStack = new Stack<>();
     }
 
     public int nextInt() {
@@ -29,8 +38,8 @@ public class Reader {
                 continue;
             }else if (c >= '0' && c <= '9' || c == '.' || c == '-'){
                 stringBuilder.append(c);
-            }else {
-                pos --;
+            }else if (c == ','){
+//                pos --;
                 break;
             }
         }
@@ -64,12 +73,91 @@ public class Reader {
         return false;
     }
 
-    public void beginArray() {
+    public boolean hasNextName() {
+        nextNonWhitespace();
+        StringBuilder stringBuilder = new StringBuilder();
+        char c;
+        while (pos < buffer.length) {
+            c = buffer[pos ++];
+            if (c == ':') break;
+            if (c == '}') {
+                pos --;
+                break;
+            }
+            switch (c) {
+                case '"':
+                    if (stringBuilder.length() == 0) {
+                        continue;
+                    }
+                    break;
+                case ' ':
+                case '\n':
+                case '\t':
+                case '\r':
+                case '{':
+                    break;
+                default:
+                    stringBuilder.append(c);
+            }
+        }
+        if (stringBuilder.length() > 0) nameStack.push(stringBuilder.toString());
+        return !nameStack.isEmpty();
+    }
+
+    public void beginObject() {
+        if (buffer[pos] == '{') {
+            stack.push(OBJECT);
+            pos ++;
+        }
 
     }
 
-    public void endArray() {
+    public void endObject() {
+        if (buffer[pos] == '}') {
+            stack.pop();
+        }
+    }
 
+    public void beginArray() {
+        if (buffer[pos] == '[') {
+            stack.push(ARRAY);
+            pos ++;
+        }
+    }
+
+    public void endArray() {
+        if (buffer[pos] == ']') {
+            stack.pop();
+        }
+    }
+
+    public boolean hasNextJsonString() {
+        nextNonWhitespace();
+        StringBuilder stringBuilder = new StringBuilder();
+        int length = 0;
+        char c;
+        while (pos < buffer.length) {
+            c = buffer[pos ++];
+            if ((c == '}'|| c == ',') && stack.peek() != OBJECT) {
+                continue;
+            }
+            if (c == '{') {
+                stack.push(OBJECT);
+            }
+            if (c == ']') {
+                pos --;
+                break;
+            }
+            length ++;
+            if (c == '}' && stack.peek() == OBJECT) {
+                stack.pop();
+                break;
+            }
+        }
+        if (length > 0) {
+            pos -= length;
+        }
+        return length > 0 && stack.peek() == ARRAY;
     }
 
     public double nextDouble() {
@@ -83,7 +171,7 @@ public class Reader {
     }
 
     public String nextName() {
-        return nextString();
+        return nameStack.pop();
     }
 
     public boolean hasNext() {
@@ -108,7 +196,7 @@ public class Reader {
     public void nextNonWhitespace() {
         while (pos < buffer.length){
             char c = buffer[pos];
-            if (c == '{' || c == ' ' || c == ','){
+            if (c == ' ' || c == ','){
                 pos ++;
                 continue;
             }else {

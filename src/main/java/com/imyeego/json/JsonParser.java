@@ -1,8 +1,5 @@
 package com.imyeego.json;
 
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,35 +31,15 @@ public class JsonParser {
             return Collections.EMPTY_LIST;
         }
         Reader reader = new Reader(json);
-        List<T> list = null;
+        List<T> list = new ArrayList<>();
         ObjectTypeAdapter parser = new ObjectTypeAdapter(clazz);
-        char c;
-        try {
-            c = reader.next();
-            if (c == '[' && reader.hasNext()) {
-                reader.skipNext();
-                list = new ArrayList<>();
-                c = reader.next();
-            }
-        } catch (Reader.BufferException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
-        while (c != ']') {
-            if (c == '{') {
-                Object obj = parser.read(reader);
-                list.add((T) obj);
-            }
-            reader.skipNext();
-            try {
-                c = reader.next();
-            } catch (Reader.BufferException e) {
-                e.printStackTrace();
-                return Collections.emptyList();
-            }
-
+        reader.beginArray();
+        while (reader.hasNextJsonString()) {
+            Object o = parser.read(reader);
+            list.add((T) o);
         }
 
+        reader.endArray();
         return list;
     }
 

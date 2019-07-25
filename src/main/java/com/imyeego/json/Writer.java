@@ -20,6 +20,7 @@ public class Writer {
     }
 
     public void endObject() {
+        toPrevious();
         stringBuilder.append('}');
 
     }

@@ -27,6 +27,13 @@ public class TypeAdapterFactory {
                 return new DoubleTypeAdapter();
             case "java.lang.String":
                 return new StringTypeAdapter();
+            case "java.util.List":
+                try {
+                    return new ListTypeAdapter(Class.forName(type));
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
             default:
                 try {
                     return new ObjectTypeAdapter(Class.forName(type));
