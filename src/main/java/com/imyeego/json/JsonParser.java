@@ -1,5 +1,6 @@
 package com.imyeego.json;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,10 +48,22 @@ public class JsonParser {
         if (src == null) {
             return "";
         }
-        ObjectTypeAdapter adapter = new ObjectTypeAdapter(src.getClass());
+        ObjectTypeAdapter adapter;
+        adapter = new ObjectTypeAdapter(src.getClass());
         Writer writer = new Writer();
         return adapter.write(writer, src);
     }
 
+    public String toJson(Object src, Type type) {
+        if (src == null) {
+            return "";
+        }
+        if (src instanceof List) {
+            ListTypeAdapter adapter = new ListTypeAdapter((Class<?>) type);
+            Writer writer = new Writer();
+            return adapter.write(writer, (List<?>) src);
+        }
 
+        return "";
+    }
 }

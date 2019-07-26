@@ -25,12 +25,17 @@ public class Writer {
 
     }
 
-    public void startArray() {
+    public void beginArray() {
         stringBuilder.append('[');
 
     }
 
+    public void nextArray() {
+        stringBuilder.append(',');
+    }
+
     public void endArray() {
+        toPrevious();
         stringBuilder.append(']');
 
     }
@@ -66,7 +71,8 @@ public class Writer {
     }
 
     public Writer toPrevious() {
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        if (stringBuilder.charAt(stringBuilder.length() - 1) == ',')
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         return this;
     }
 

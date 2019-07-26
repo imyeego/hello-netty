@@ -1,6 +1,7 @@
 package com.imyeego.json;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +62,12 @@ public class ObjectTypeAdapter implements TypeAdapter<Object> {
         try {
             field.setAccessible(true);
             object = field.get(src);
-            TypeAdapter p = TypeAdapterFactory.getAdapterFromType(type);
+            TypeAdapter p;
+            if (type.equals("java.util.List")) {
+                String elementType = ((ParameterizedType)field.getGenericType()).getActualTypeArguments()[0].getTypeName();
+                p = TypeAdapterFactory.getAdapterFromType(type, elementType);
+            } else
+                p = TypeAdapterFactory.getAdapterFromType(type, null);
             if (p != null) {
                 p.write(writer, object);
             }
@@ -79,8 +85,11 @@ public class ObjectTypeAdapter implements TypeAdapter<Object> {
         if (field != null){
             TypeAdapter p;
             String type = field.getType().getName();
-
-            p = TypeAdapterFactory.getAdapterFromType(type);
+            if (type.equals("java.util.List")) {
+                String elementType = ((ParameterizedType)field.getGenericType()).getActualTypeArguments()[0].getTypeName();
+                p = TypeAdapterFactory.getAdapterFromType(type, elementType);
+            } else
+                p = TypeAdapterFactory.getAdapterFromType(type, null);
             Object obj = null;
             if (p != null) {
                 obj = p.read(reader);

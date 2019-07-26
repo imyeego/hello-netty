@@ -2,7 +2,7 @@ package com.imyeego.json;
 
 public class TypeAdapterFactory {
 
-    public static TypeAdapter getAdapterFromType(String type) {
+    public static TypeAdapter getAdapterFromType(String type, String elementType) {
         switch (type) {
             case "boolean":
             case "Java.lang.Boolean":
@@ -29,7 +29,7 @@ public class TypeAdapterFactory {
                 return new StringTypeAdapter();
             case "java.util.List":
                 try {
-                    return new ListTypeAdapter(Class.forName(type));
+                    return new ListTypeAdapter(Class.forName(elementType));
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }

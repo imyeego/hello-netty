@@ -77,14 +77,14 @@ public class Reader {
         nextNonWhitespace();
         StringBuilder stringBuilder = new StringBuilder();
         char c;
-        while (pos < buffer.length) {
+        loop:while (pos < buffer.length) {
             c = buffer[pos ++];
-            if (c == ':') break;
-            if (c == '}') {
-                pos --;
-                break;
-            }
             switch (c) {
+                case ':':
+                    break loop;
+                case '}':
+                    pos --;
+                    break loop;
                 case '"':
                     if (stringBuilder.length() == 0) {
                         continue;
@@ -119,6 +119,7 @@ public class Reader {
     }
 
     public void beginArray() {
+        nextNonWhitespace();
         if (buffer[pos] == '[') {
             stack.push(ARRAY);
             pos ++;
@@ -133,7 +134,6 @@ public class Reader {
 
     public boolean hasNextJsonString() {
         nextNonWhitespace();
-        StringBuilder stringBuilder = new StringBuilder();
         int length = 0;
         char c;
         while (pos < buffer.length) {
@@ -198,7 +198,6 @@ public class Reader {
             char c = buffer[pos];
             if (c == ' ' || c == ','){
                 pos ++;
-                continue;
             }else {
                 break;
             }
