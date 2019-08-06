@@ -1,8 +1,10 @@
 package com.imyeego.nio;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
@@ -15,14 +17,23 @@ import java.util.concurrent.Executors;
 public class NioServer {
 
     private static Queue<Response> responseQueue = new LinkedList<>();
-    private static InetSocketAddress address = new InetSocketAddress("localhost", 8888);
+    private static InetSocketAddress address;
+    private static InetSocketAddress tcpAddress;
     private static ExecutorService service = Executors.newFixedThreadPool(4);
 
     public static void main(String[] args) {
 
-        service.execute(tcpServer);
+        try {
+            String host = InetAddress.getLocalHost().getHostAddress();
+            log("本地地址: " + host);
+//            address = new InetSocketAddress(host, 8888);
+            tcpAddress = new InetSocketAddress(host, 8889);
+            service.execute(tcpServer);
 
-        service.execute(udpServer);
+//            service.execute(udpServer);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -32,7 +43,7 @@ public class NioServer {
         try {
             selector = Selector.open();
             channel = ServerSocketChannel.open();
-            channel.bind(address);
+            channel.bind(tcpAddress);
             channel.configureBlocking(false);
 
             int ops = channel.validOps();
@@ -55,34 +66,46 @@ public class NioServer {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
 
+                    if (!selectionKey.isValid()) {
+                        continue;
+                    }
+
                     if (selectionKey.isAcceptable()) {
                         try {
                             SocketChannel socketChannel = channel.accept();
                             socketChannel.configureBlocking(false);
 
-                            socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                            socketChannel.register(selector, socketChannel.validOps());
                             log("Connection Accept: " + socketChannel.getRemoteAddress());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
 
-                    if (selectionKey.isReadable()) {
+                    if (selectionKey.isValid() && selectionKey.isReadable()) {
                         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
                         ByteBuffer byteBuffer = ByteBuffer.allocate(256);
 
                         try {
                             if (socketChannel.read(byteBuffer) != -1) {
                                 String result = new String(byteBuffer.array()).trim();
-                                responseQueue.offer(new Response("response: " + result, socketChannel.getRemoteAddress()));
+                                responseQueue.offer(new Response(result, socketChannel.getRemoteAddress()));
                                 log("Message Received: " + result);
                             }
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            selectionKey.cancel();
+                            try {
+                                ((SocketChannel) selectionKey.channel()).socket().close();
+                                selectionKey.channel().close();
+                                continue;
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+//                            e.printStackTrace();
                         }
                     }
 
-                    if (selectionKey.isWritable()) {
+                    if (selectionKey.isValid() && selectionKey.isWritable()) {
                         if (responseQueue.peek() != null) {
                             Response response = responseQueue.poll();
                             byte[] bytes = (response.message + "\r\n").getBytes();
@@ -90,12 +113,19 @@ public class NioServer {
                             SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
                             try {
                                 socketChannel.write(buffer);
+                                log("sending response:" + response.message);
                             } catch (IOException e) {
+                                selectionKey.cancel();
                                 e.printStackTrace();
+                                continue;
                             }
                         }
 
 
+                    }
+
+                    if (!selectionKey.isConnectable()) {
+                        continue;
                     }
                 }
             } else {
@@ -145,7 +175,7 @@ public class NioServer {
                         }
                         if (byteBuffer.position() != 0 && socketAddress != null) {
                             String result = new String(byteBuffer.array()).trim();
-                            responseQueue.offer(new Response("response " + result, socketAddress));
+                            responseQueue.offer(new Response(result, socketAddress));
                             log("Message Received: " + result);
                         }
                     }
@@ -153,7 +183,7 @@ public class NioServer {
                     if (selectionKey.isWritable()) {
                         if (responseQueue.peek() != null) {
                             Response response = responseQueue.poll();
-                            byte[] bytes = (response.message + "\r\n").getBytes();
+                            byte[] bytes = response.message.getBytes();
                             ByteBuffer buffer = ByteBuffer.wrap(bytes);
                             DatagramChannel dataChannel = (DatagramChannel) selectionKey.channel();
                             try {

@@ -1,8 +1,10 @@
 package com.imyeego.nio;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -11,33 +13,26 @@ import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class NioClient {
 
     private static SocketChannel socketChannel = null;
     private static DatagramChannel datagramChannel = null;
-    private static InetSocketAddress address = new InetSocketAddress("localhost", 8888);
+    private static InetSocketAddress address = new InetSocketAddress("192.168.137.1", 8889);
     private static boolean timerSetted, timeOuted, udpConnected;
     private static Timer timer = new Timer();
+    private static Timer udpTimer;
     private static Queue<String> requestQueue = new LinkedList<>();
     private static Queue<String> udpRequestQueue = new LinkedList<>();
     private static ExecutorService service = Executors.newCachedThreadPool();
+    private static ScheduledExecutorService scheduledService = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws InterruptedException{
 
-        service.execute(udpClient);
-        List<String> list = new ArrayList<>();
-        list.add("Facebook");
-        list.add("Apple");
-        list.add("Google");
-        list.add("Microsoft");
-        list.add("Amazon");
-
-
-        for (String s : list) {
-            udpRequestQueue.offer(s);
-            Thread.sleep(2000);
-        }
+        service.execute(tcpClient);
+        scheduledService.scheduleAtFixedRate(hearbeat, 1_000, 3_000, TimeUnit.MILLISECONDS);
 
     }
 
@@ -79,6 +74,7 @@ public class NioClient {
             datagramChannel = DatagramChannel.open();
             datagramChannel.configureBlocking(false);
             datagramChannel.connect(address);
+            udpConnected = true;
         } catch (IOException e) {
             connectUDP();
         }
@@ -89,7 +85,12 @@ public class NioClient {
         System.out.println(msg);
     }
 
-    private static Runnable nioClient = () -> {
+    private static Runnable hearbeat = () -> {
+        String current = String.valueOf(System.currentTimeMillis());
+        requestQueue.offer(current);
+    };
+
+    private static Runnable tcpClient = () -> {
         try {
             connect();
         } catch (SocketTimeoutException e) {
@@ -130,6 +131,7 @@ public class NioClient {
                                 if (requestQueue.peek() != null) {
                                     byte[] request = (requestQueue.poll() + "\r\n").getBytes();
                                     ByteBuffer buffer = ByteBuffer.wrap(request);
+
                                     socketChannel.write(buffer);
                                     log("sending tcp: " + new String(request));
                                 }
@@ -139,6 +141,7 @@ public class NioClient {
 
                 } while (true);
             } catch (IOException e) {
+
                 e.printStackTrace();
             }
         }
@@ -172,8 +175,13 @@ public class NioClient {
                                 DatagramChannel socketChannel = (DatagramChannel) selectionKey.channel();
                                 ByteBuffer byteBuffer = ByteBuffer.allocate(256);
                                 socketChannel.receive(byteBuffer);
-                                if (byteBuffer.position() != 0) {
+                                if (byteBuffer.position() != 0 ) {
+                                    long currentTime = System.currentTimeMillis();
                                     String result = new String(byteBuffer.array()).trim();
+                                    if (udpTimer != null && currentTime - Long.parseLong(result) <= 3_000) {
+                                        udpTimer.cancel();
+                                        log("udp 连接正常");
+                                    }
                                     log("Message Received UDP: " + result);
                                 }
 
@@ -185,6 +193,7 @@ public class NioClient {
                                     byte[] request = (udpRequestQueue.poll() + "\r\n").getBytes();
                                     ByteBuffer buffer = ByteBuffer.wrap(request);
                                     datagramChannel.send(buffer, address);
+                                    startTimer();
                                     log("sending udp: " + new String(request));
                                 }
                             }
@@ -197,4 +206,14 @@ public class NioClient {
         }
 
     };
+
+    private static void startTimer() {
+        udpTimer = new Timer();
+        udpTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                log("udp 超时...");
+            }
+        }, 3_000);
+    }
 }
