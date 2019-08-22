@@ -1,13 +1,12 @@
 package com.imyeego.kotlin
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
-import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
-import kotlin.concurrent.thread
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.produce
 import kotlin.math.PI
-import kotlin.math.truncate
 
 object Hello {
 
@@ -43,16 +42,16 @@ fun main() = runBlocking {
 //            delayTask(i)
 //        }
 //    }
-    val job = launch {
-        try {
-            repeat(1_000) { i ->
-                println("job: I'm sleeping $i")
-                delay(500L)
-            }
-        } finally {
-            println("job: I'm running finally")
-        }
-    }
+//    val job = launch {
+//        try {
+//            repeat(1_000) { i ->
+//                println("job: I'm sleeping $i")
+//                delay(500L)
+//            }
+//        } finally {
+//            println("job: I'm running finally")
+//        }
+//    }
 //    val start = System.currentTimeMillis()
 //    val job1 = launch(Dispatchers.Default) {
 //        var next = start
@@ -65,11 +64,11 @@ fun main() = runBlocking {
 //        }
 //    }
 
-    delay(1000L)
-    println("main: I'm tired of waiting!")
-    job.cancelAndJoin()
+//    delay(1000L)
+//    println("main: I'm tired of waiting!")
+//    job.cancelAndJoin()
 //    job1.cancelAndJoin()
-    println("main: Now I can quit.")
+//    println("main: Now I can quit.")
 
 //    job.join()
 //    coroutineScope {
@@ -103,11 +102,126 @@ fun main() = runBlocking {
 //    }
 //    job.join()
 
+    // basic of channel
+//    val channel = Channel<Int>()
+//    launch {
+//        for (x in 1 .. 5) channel.send(x * x)
+//    }
+//    repeat(5) {
+//        println(channel.receive())
+//    }
+
+    // iteration of channel
+//    launch {
+//        for (x in 1 ..5) channel.send(x * x)
+//        channel.close()
+//    }
+//    for (y in channel) println(y)
+
+    // pipeline
+//    val numbers = produceNumbers(2)
+//    val squares = square(numbers)
+//    for (x in 1 .. 5) println(squares.receive())
+
+    // generate prime array with pipeline
+//    var numbers = produceNumbers(2)
+//    for (x in 1 .. 10) {
+//        val prime = numbers.receive()
+//        println(prime)
+//        numbers = filter(numbers, prime)
+//    }
+//    coroutineContext.cancelChildren()
+
+    // consume a channel with multi-coroutine
+//    var producer = produceNumbers(1)
+//    repeat(5) {
+//        launchProcessor(it, producer)
+//    }
+//    delay(950L)
+//    producer.cancel()
+
+    // multi-coroutine produce into a channel
+//    var channel = Channel<String>()
+//    launch { sendString(channel, "foo", 200L) }
+//    launch { sendString(channel, "bar", 500L) }
+//
+//    repeat(6) {
+//        println(channel.receive())
+//    }
+//    coroutineContext.cancelChildren()
+
+    // channel with buffer
+//    val channel = Channel<Int>(4)
+//    val sender = launch {
+//        repeat(10) {
+//            println("sending $it ....")
+//            channel.send(it)
+//        }
+//    }
+//
+//    delay(5000L)
+//    sender.cancel()
+
+    // fair in channel
+    val table = Channel<Ball>()
+    launch { player("ping", table) }
+    launch { player("pong", table) }
+    table.send(Ball(0))
+    delay(1000L)
+    coroutineContext.cancelChildren()
+
+    println("Done")
+
+
+
 }
 
 suspend fun delayTask(i: Int) {
     delay(500L)
     println("Hello Jay $i")
+}
+
+fun CoroutineScope.produceNumbers(start: Int) : ReceiveChannel<Int> = produce {
+    var x = start
+    while (true) {
+        send(x++)
+        delay(100L)
+    }
+}
+
+fun CoroutineScope.square(numbers: ReceiveChannel<Int>) : ReceiveChannel<Int> = produce {
+    for (x in numbers) send(x * x)
+}
+
+fun CoroutineScope.filter(numbers: ReceiveChannel<Int>, prime: Int) : ReceiveChannel<Int> = produce {
+    for (x in numbers) {
+        print("$x, ")
+        if (x % prime != 0) {
+            send(x)
+        }
+    }
+}
+
+fun CoroutineScope.launchProcessor(id: Int, channel: ReceiveChannel<Int>) = launch {
+    for (message in channel) {
+        println("Processor #$id received $message")
+    }
+}
+
+suspend fun sendString(channel: SendChannel<String>, string: String, time: Long) {
+    while (true) {
+        channel.send(string)
+        delay(time)
+    }
+}
+
+suspend fun player(name: String, table: Channel<Ball>) {
+    for (ball in table) {
+        ball.hits++
+        println("$name, $ball")
+        delay(300L)
+        table.send(ball)
+    }
 }
 
 fun testGson() {
@@ -139,3 +253,5 @@ fun testLambda(): Int {
 fun opration(i: Int, add: (j: Int) -> Int) : Int{
     return i + add(i)
 }
+
+data class Ball(var hits: Int)
