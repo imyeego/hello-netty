@@ -8,5 +8,9 @@ object Test {
         val singleTon = SingleTon.getInstance()
         println("count1=" + SingleTon.count1)
         println("count2=" + SingleTon.count2)
+
+
     }
+
+    fun test(i: Int) = i * 2
 }
