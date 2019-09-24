@@ -31,7 +31,7 @@ public class Offer16 {
     }
 
 
-    public static ListNode reverseList(ListNode head){
+    static ListNode reverseList(ListNode head){
         if (head == null) {
             return null;
         }

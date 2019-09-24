@@ -1,5 +1,7 @@
 package com.imyeego.frame;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Supplier;
 
 public class Lambda {
@@ -13,13 +15,21 @@ public class Lambda {
 
     public static void main(String[] args) {
 //        System.out.println(ss);
-        Strategy card = new VerifyWithCard();
-        card.skip();
-        card.next();
-
-        Strategy db = new VerifyWithDb();
-        db.skip();
-        db.next();
+//        Strategy card = new VerifyWithCard();
+//        card.skip();
+//        card.next();
+//
+//        Strategy db = new VerifyWithDb();
+//        db.skip();
+//        db.next();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("延时任务");
+                timer.cancel();
+            }
+        }, 5000);
     }
 
 

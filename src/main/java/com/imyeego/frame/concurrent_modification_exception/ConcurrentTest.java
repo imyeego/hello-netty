@@ -54,8 +54,10 @@ public class ConcurrentTest {
 
 
 //        testSocket();
-        testGson();
-
+//        testGson();
+//        int a = 100;
+//        System.out.println(a >> 1);
+//        System.out.println(a);
 //        testGenerics();
 //        testSwitch();
 
