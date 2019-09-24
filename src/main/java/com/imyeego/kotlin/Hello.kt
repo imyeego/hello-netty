@@ -1,5 +1,6 @@
 package com.imyeego.kotlin
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -90,7 +91,7 @@ fun main() = runBlocking {
 //        Thread.sleep(1000)
 //        println("hello world!")
 //    }
-//    testNullCheck()
+    testNullCheck()
 
 //    var per: Person? = Person()
 //    per?.name = "liuzhao"
@@ -163,14 +164,14 @@ fun main() = runBlocking {
 //    sender.cancel()
 
     // fair in channel
-    val table = Channel<Ball>()
-    launch { player("ping", table) }
-    launch { player("pong", table) }
-    table.send(Ball(0))
-    delay(1000L)
-    coroutineContext.cancelChildren()
-
-    println("Done")
+//    val table = Channel<Ball>()
+//    launch { player("ping", table) }
+//    launch { player("pong", table) }
+//    table.send(Ball(0))
+//    delay(1000L)
+//    coroutineContext.cancelChildren()
+//
+//    println("Done")
 
 
 
@@ -227,14 +228,16 @@ suspend fun player(name: String, table: Channel<Ball>) {
 fun testGson() {
     var json = "{\"id\":1,\"name\":null,\"age\":18,\"grade\":3,\"classTh\":2}"
     var student = Student(1, "liuzhao", 18, 3, 2)
-//    var s = Gson().toJson(stuent)
-    var gsonBuilder = GsonBuilder()
-    gsonBuilder.serializeNulls().excludeFieldsWithoutExposeAnnotation()
+//    var s = Gson().toJson(student)
+    var student1 = Gson().fromJson(json, Student::class.java)
+    println(student1.toString())
+//    var gsonBuilder = GsonBuilder()
+//    gsonBuilder.serializeNulls().excludeFieldsWithoutExposeAnnotation()
 
-    var ob = gsonBuilder.create().fromJson(json, Student::class.java)
-    val s = gsonBuilder.create().toJson(student)
-    println(ob.toString())
-    println(s)
+//    var ob = gsonBuilder.create().fromJson(json, Student::class.java)
+//    val s = gsonBuilder.create().toJson(student)
+//    println(ob.toString())
+//    println(s)
 }
 
 fun testNullCheck(): Unit {

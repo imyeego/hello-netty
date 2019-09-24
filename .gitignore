@@ -9,5 +9,6 @@ out
 gen
 
 /target/
+/out/
 /netty-im/*.iml
 /nettyhello/*.iml
