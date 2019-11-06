@@ -84,14 +84,14 @@ fun main() = runBlocking {
 
 //    Thread.sleep(2000L)
 //    var f = Hello().sure()
-//    testGson()
+    testGson()
 //    println(testLambda())
 //
 //    thread(start = true) {
 //        Thread.sleep(1000)
 //        println("hello world!")
 //    }
-    testNullCheck()
+//    testNullCheck()
 
 //    var per: Person? = Person()
 //    per?.name = "liuzhao"
@@ -226,7 +226,8 @@ suspend fun player(name: String, table: Channel<Ball>) {
 }
 
 fun testGson() {
-    var json = "{\"id\":1,\"name\":null,\"age\":18,\"grade\":3,\"classTh\":2}"
+//    var json = "{\"id\":1,\"name\":null,\"age\":18,\"grade\":3,\"classTh\":2}"
+    var json = "{\"id\":1,\"name\":null,\"age\":18}"
     var student = Student(1, "liuzhao", 18, 3, 2)
 //    var s = Gson().toJson(student)
     var student1 = Gson().fromJson(json, Student::class.java)
@@ -242,7 +243,9 @@ fun testGson() {
 
 fun testNullCheck(): Unit {
     var s: String? = null
-    println(s?.length)
+    if (s != null) {
+        println(s.length)
+    }
 }
 
 fun testLambda(): Int {

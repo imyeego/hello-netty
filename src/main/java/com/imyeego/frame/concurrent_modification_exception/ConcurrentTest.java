@@ -24,16 +24,16 @@ public class ConcurrentTest {
     public static void main(String[] args) {
 //        removeByForeach();
 //        removeByIterator();
-//        String day = "2019-5-21";
-//        Date oldDate = null;
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-//        try {
-//            oldDate = sdf.parse(day);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        String s = sdf.format(new Date());
-//        System.out.println(new Date().after(oldDate));
+        String day = "2019-10-19 9:00";
+        Date oldDate = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+        try {
+            oldDate = sdf.parse(day);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String s = sdf.format(new Date());
+        System.out.println(new Date().after(oldDate));
 //        String time = "5:00-7:00";
 //        String[] times = time.split("-");
 //        for (String s : times) {
