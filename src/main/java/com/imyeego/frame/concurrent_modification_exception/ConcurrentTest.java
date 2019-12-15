@@ -55,12 +55,21 @@ public class ConcurrentTest {
 
 //        testSocket();
 //        testGson();
+        testCallable();
 //        int a = 100;
 //        System.out.println(a >> 1);
 //        System.out.println(a);
 //        testGenerics();
 //        testSwitch();
+//        testException();
 
+    }
+
+    private static void testException() {
+        int a = 1;
+        while (true) {
+            if (a == 1) throw new IllegalArgumentException("connect: The address can't be null");
+        }
     }
 
 
@@ -126,23 +135,24 @@ public class ConcurrentTest {
         Socket client = null;
         try {
             client = new Socket();
-            SocketAddress address = new InetSocketAddress("222.91.163.154", 12789);
+            SocketAddress address = new InetSocketAddress("222.91.163.154", 12788);
 //            SocketAddress address = new InetSocketAddress("192.168.10.101", 8888);
             client.connect(address, 3000);
-            client.setSoTimeout(5_000);
-            //构建IO
-            InputStream is = client.getInputStream();
-            OutputStream os = client.getOutputStream();
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
-            //向服务器端发送一条消息
-            bw.write(str2 + "\r\n");
-            bw.flush();
-
-            //读取服务器返回的消息
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String mess = br.readLine();
-            System.out.println("服务器："+mess);
+            if (client.isConnected()) System.out.println("连接成功");
+//            client.setSoTimeout(5_000);
+//            //构建IO
+//            InputStream is = client.getInputStream();
+//            OutputStream os = client.getOutputStream();
+//
+//            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+//            //向服务器端发送一条消息
+//            bw.write(str2 + "\r\n");
+//            bw.flush();
+//
+//            //读取服务器返回的消息
+//            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+//            String mess = br.readLine();
+//            System.out.println("服务器："+mess);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -237,5 +247,41 @@ public class ConcurrentTest {
         }
 
         return date;
+    }
+
+    private static void testCallable() {
+        ExecutorService service = Executors.newCachedThreadPool();
+        /*Future<String> future = service.submit(() -> {
+           Thread.sleep(5000);
+           return "hello callable";
+        });
+        String result = null;
+        try {
+            result = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            service.shutdown();
+        }
+        System.out.println(result);*/
+        service.execute(() -> {
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("hello runnable first");
+        });
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            service.shutdown();
+        }
+
+
+
     }
 }
