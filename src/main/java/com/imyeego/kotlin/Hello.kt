@@ -84,14 +84,14 @@ fun main() = runBlocking {
 
 //    Thread.sleep(2000L)
 //    var f = Hello().sure()
-    testGson()
+//    testGson()
 //    println(testLambda())
 //
 //    thread(start = true) {
 //        Thread.sleep(1000)
 //        println("hello world!")
 //    }
-//    testNullCheck()
+    testNullCheck()
 
 //    var per: Person? = Person()
 //    per?.name = "liuzhao"
@@ -243,6 +243,12 @@ fun testGson() {
 
 fun testNullCheck(): Unit {
     var s: String? = null
+
+    println(s?.length)
+    println(s?.length?:0)
+    println(s!!.length)
+
+
     if (s != null) {
         println(s.length)
     }

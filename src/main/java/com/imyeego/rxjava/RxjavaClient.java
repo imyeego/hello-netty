@@ -1,16 +1,11 @@
 package com.imyeego.rxjava;
 
-import com.sun.tools.javac.code.Attribute;
 import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class RxjavaClient {
 
@@ -56,18 +51,15 @@ public class RxjavaClient {
 //        worker.schedule(() -> {
 //
 //        });
-
         Observable.just(createString())
                 .map(s -> {
                     System.out.println("mapped observable:" + Thread.currentThread().getName());
                     return s + " is a boy";
                 })
-                .subscribeOn(Schedulers.computation())
-                .observeOn(Schedulers.io())
                 .doOnNext(s -> {
                     System.out.println("observer:" + Thread.currentThread().getName());
                     System.out.println(s);
-                });
+                }).subscribe();
 
         try {
             Thread.sleep(6000);
