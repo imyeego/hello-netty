@@ -21,19 +21,22 @@ import java.util.concurrent.*;
 
 public class ConcurrentTest {
     private static volatile int i = 0;
+    private static BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(5);
+
     public static void main(String[] args) {
 //        removeByForeach();
 //        removeByIterator();
-        String day = "2019-10-19 9:00";
-        Date oldDate = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
-        try {
-            oldDate = sdf.parse(day);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        String s = sdf.format(new Date());
-        System.out.println(new Date().after(oldDate));
+//        String day = "2020-1-3 9:00";
+//        Date oldDate = null;
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+//        try {
+//            oldDate = sdf.parse(day);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        String s = sdf.format(new Date());
+//        System.out.println(new Date().after(oldDate));
+
 //        String time = "5:00-7:00";
 //        String[] times = time.split("-");
 //        for (String s : times) {
@@ -41,7 +44,6 @@ public class ConcurrentTest {
 //        }
 //
 //        System.out.println(time);
-
 
 
 //        String date = format("10月10日");
@@ -52,18 +54,156 @@ public class ConcurrentTest {
 //        System.out.println(Calendar.getInstance(Locale.CHINA).getTimeInMillis());
 
 
-
 //        testSocket();
 //        testGson();
-        testCallable();
+//        testCallable();
 //        int a = 100;
 //        System.out.println(a >> 1);
 //        System.out.println(a);
 //        testGenerics();
 //        testSwitch();
 //        testException();
-
+//        testThreadPool();
+//        testForkJoin();
+//        testMerge();
     }
+
+    private static void testMerge() {
+        int[] array = new int[]{8,-1, 5, 11, 13, 0, 2, 5, 6, 10, 4, -9, 1, 3, 3};
+        merge(array, 1, 5, 10);
+        System.out.println(Arrays.toString(array));
+    }
+
+    private static void testForkJoin() {
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+//        CountTask countTask = new CountTask(1, 10000L);
+//        ForkJoinTask<Long> result = pool.submit(countTask);
+//        System.out.println("start compute ...");
+//        try {
+//            long start = System.currentTimeMillis();
+//            System.out.println(result.get());
+//            System.out.println("time cost " + (System.currentTimeMillis() - start) / 1000 + "s");
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
+        long[] array = new long[60];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = (long) (Math.random() * 100);
+        }
+        System.out.println(Arrays.toString(array));
+        pool.invoke(new SortTask(array));
+        System.out.println(Arrays.toString(array));
+    }
+
+    public static void merge(int[] array, int lo, int mid, int hi) {
+        int[] buf = Arrays.copyOfRange(array, lo, mid);
+        for (int i = 0, j = lo, k = mid; i < buf.length; j++) {
+            array[j] = (k == hi || buf[i] < array[k]) ? buf[i++] : array[k++];
+        }
+    }
+
+    static class SortTask extends RecursiveAction {
+
+        static final int THRESHOLD = 12;
+
+        final long[] array;
+        final int lo, hi;
+
+        public SortTask(long[] array, int lo, int hi) {
+            this.array = array;
+            this.lo = lo;
+            this.hi = hi;
+        }
+
+        public SortTask(long[] array) {
+            this(array, 0, array.length);
+        }
+
+        public void sortSequentially(int lo, int hi) {
+            Arrays.sort(array, lo, hi);
+        }
+
+        public void merge(int lo, int mid, int hi) {
+            long[] buf = Arrays.copyOfRange(array, lo, mid);
+            for (int i = 0, j = lo, k = mid; i < buf.length; j++) {
+                array[j] = (k == hi || buf[i] < array[k]) ? buf[i++] : array[k++];
+            }
+        }
+
+        @Override
+        protected void compute() {
+            if (hi - lo < THRESHOLD) {
+                sortSequentially(lo, hi);
+                System.out.println(Arrays.toString(array));
+            } else {
+                int mid = (lo + hi) >>> 1;
+                invokeAll(new SortTask(array, lo, mid), new SortTask(array, mid, hi));
+                merge(lo, mid, hi);
+            }
+        }
+    }
+
+    public static class CountTask extends RecursiveTask<Long> {
+        private long start;
+        private long end;
+
+        public CountTask(long start, long end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        public static final int threadhold = 100;
+
+        @Override
+        protected Long compute() {
+            long sum = 0;
+            // 如果任务足够小, 就直接执行
+            boolean canCompute = (end - start) <= threadhold;
+            if (canCompute) {
+                for (long i = start; i <= end; i++) {
+                    sum += i;
+                }
+                System.out.println(Thread.currentThread().getName() + ": ∑(" + start + "~" + end + ")=" + sum);
+            } else {
+                //任务大于阈值, 分裂为2个任务
+                long middle = (start + end) / 2;
+                CountTask countTask1 = new CountTask(start, middle);
+                CountTask countTask2 = new CountTask(middle + 1, end);
+
+                // 开启线程
+                countTask1.fork();
+                countTask2.fork();
+//                invokeAll(countTask1, countTask2);
+
+                // 结果合并
+                sum = countTask1.join() + countTask2.join();
+            }
+            return sum;
+        }
+    }
+
+    private static void testThreadPool() {
+        ExecutorService frExecutor = new ThreadPoolExecutor(1, 5, 0, TimeUnit.MILLISECONDS, queue);
+        while (true) {
+            frExecutor.execute(new FaceRunnable(++i));
+        }
+    }
+
+    static class FaceRunnable implements Runnable {
+        int data;
+
+        public FaceRunnable(int data) {
+            this.data = data;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(Thread.currentThread().getName() + ": " + data);
+        }
+    }
+
 
     private static void testException() {
         int a = 1;
@@ -85,11 +225,9 @@ public class ConcurrentTest {
             }
         };
         Type[] types = list.getClass().getGenericInterfaces();
-        Type type = ((ParameterizedType)types[0]).getActualTypeArguments()[0];
+        Type type = ((ParameterizedType) types[0]).getActualTypeArguments()[0];
         Class<?> clazz = (Class<?>) type;
-        Set<Class<?>> set = new HashSet<>();
-        set.add(clazz);
-        System.out.println();
+        System.out.println(clazz.getTypeName());
     }
 
     private static void testGson() {
@@ -114,7 +252,8 @@ public class ConcurrentTest {
 //            System.out.println(bean.getName());
 //        }
 //        System.out.println(json);
-        List<Student> list = builder.create().fromJson(response, new TypeToken<List<Student>>(){}.getType());
+        List<Student> list = builder.create().fromJson(response, new TypeToken<List<Student>>() {
+        }.getType());
 //        List<Student> list = null;
 //        for (Student s : list) {
 //            System.out.println(s.getName());
@@ -189,16 +328,16 @@ public class ConcurrentTest {
         }
     };
 
-    private static void removeByForeach(@NotNull String s){
+    private static void removeByForeach(@NotNull String s) {
         List<Integer> list = new ArrayList<>(Arrays.asList(2, 3, 5, 8));
-        for (Integer integer : list){
-            if (integer.intValue() == 2){
+        for (Integer integer : list) {
+            if (integer.intValue() == 2) {
                 list.remove(integer);
             }
         }
     }
 
-    private static void removeByIterator(){
+    private static void removeByIterator() {
         List<Integer> list = new ArrayList<>(Arrays.asList(2, 3, 5, 8));
         //                list.remove(integer); //incorrect!this can throw ConcurrentModificationException
         list.removeIf(integer -> integer == 2);
@@ -280,7 +419,6 @@ public class ConcurrentTest {
         } finally {
             service.shutdown();
         }
-
 
 
     }
