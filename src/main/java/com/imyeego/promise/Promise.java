@@ -1,8 +1,6 @@
 package com.imyeego.promise;
 
-import rx.schedulers.Schedulers;
-
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 
 public class Promise<T> {
     private final OnSubscribe<T> onSubscribe;
