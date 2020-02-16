@@ -53,8 +53,12 @@ public class RxjavaClient {
 //        });
         Observable.just(createString())
                 .map(s -> {
+                    int i = Integer.parseInt(s);
+                    return i;
+                })
+                .map(s -> {
                     System.out.println("mapped observable:" + Thread.currentThread().getName());
-                    return s + " is a boy";
+                    return s + 5;
                 })
                 .doOnNext(s -> {
                     System.out.println("observer:" + Thread.currentThread().getName());
@@ -72,7 +76,7 @@ public class RxjavaClient {
         System.out.println("original observable:" + Thread.currentThread().getName());
         Future<String> furure = service.submit(() -> {
             Thread.sleep(5000);
-            return "liuzhao";
+            return "777";
         });
         String result = null;
         try {
@@ -120,6 +124,54 @@ public class RxjavaClient {
         }
 
         return is ? result + 10  : result;
+    }
+
+    private static Rect newRect(Rect oldRect, boolean mirror, int rotation) {
+        int top = 0, left = 0, bottom = 0, right = 0;
+        switch (rotation % 360) {
+            case 0:
+                top = oldRect.top;
+                left = mirror ? oldRect.width - oldRect.right : oldRect.left;
+                right = mirror ? oldRect.width - oldRect.left : oldRect.right;
+                bottom = oldRect.bottom;
+                break;
+            case 90:
+                top = oldRect.left;
+                left = mirror ? oldRect.top : oldRect.height - oldRect.bottom;
+                right = mirror ? oldRect.bottom : oldRect.height - oldRect.top;
+                bottom = oldRect.right;
+                break;
+            case 180:
+                top = oldRect.height - oldRect.bottom;
+                bottom = oldRect.height - oldRect.top;
+                left = !mirror ? oldRect.width - oldRect.right : oldRect.left;
+                right = !mirror ? oldRect.width - oldRect.left : oldRect.right;
+                break;
+            case 270:
+                top = oldRect.width - oldRect.right;
+                left = !mirror ? oldRect.top : oldRect.height - oldRect.bottom;
+                right = !mirror ? oldRect.bottom : oldRect.height - oldRect.top;
+                bottom = oldRect.width - oldRect.left;
+                break;
+        }
+        return new Rect(left, top, right, bottom);
+    }
+
+
+    static class Rect {
+        int top;
+        int left;
+        int right;
+        int bottom;
+        int width;
+        int height;
+
+        public Rect(int left, int top, int right, int bottom) {
+            this.top = top;
+            this.left = left;
+            this.right = right;
+            this.bottom = bottom;
+        }
     }
 
     private static void equals() {
