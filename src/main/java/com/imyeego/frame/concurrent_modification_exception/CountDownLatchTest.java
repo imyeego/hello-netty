@@ -33,6 +33,7 @@ public class CountDownLatchTest {
 //        System.out.println("Game over!");
 //        service.shutdown();
         testParallel();
+        
     }
 
     private static void testParallel() {
