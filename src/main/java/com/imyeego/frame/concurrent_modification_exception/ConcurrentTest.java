@@ -6,13 +6,17 @@ import com.imyeego.frame.bean.Student;
 import com.imyeego.frame.generics.ICallback;
 import com.imyeego.kotlin.Bean;
 import com.sun.istack.internal.NotNull;
+import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
@@ -22,6 +26,8 @@ import java.util.concurrent.*;
 public class ConcurrentTest {
     private static volatile int i = 0;
     private static BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(5);
+    static NumberFormat format = new DecimalFormat("0.0");
+
 
     public static void main(String[] args) {
 //        removeByForeach();
@@ -46,7 +52,7 @@ public class ConcurrentTest {
 //        System.out.println(time);
 
 
-//        String date = format("10月10日");
+//        String date = format("06月09日");
 //        System.out.println(date);
 
 //        String s = "liuzhao";
@@ -56,6 +62,10 @@ public class ConcurrentTest {
 
 //        testSocket();
 //        testGson();
+//        testDate()
+        testTemp();
+//        removeChinese("文00i9o8小违纪哦欸经哦就");
+//        testReflection();
 //        testCallable();
 //        int a = 100;
 //        System.out.println(a >> 1);
@@ -66,6 +76,36 @@ public class ConcurrentTest {
 //        testThreadPool();
 //        testForkJoin();
 //        testMerge();
+//        if (StaticTest.is) {
+//            System.out.println("---------");
+//        }
+//        System.out.println(StaticTest.i);
+//        testMerge();
+    }
+
+    private static void testReflection() {
+
+//        Login login = Login.instance();
+//
+//        try {
+//            Field field = login.getClass().getDeclaredField("loginBean");
+//            field.setAccessible(true);
+//
+//            try {
+//                field.set(login, null);
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            } finally {
+//                field.setAccessible(false);
+//            }
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println(Login.loginBean);
+        String org = "110108002";
+        System.out.println(org.substring(org.length() - 2));
+        System.out.println(org);
     }
 
     private static void testMerge() {
@@ -233,16 +273,21 @@ public class ConcurrentTest {
     private static void testGson() {
 //        String response = "[{\"result\":\"success\"}]";
         String response = "[{\"id\":0,\"name\":\"Jess\",\"gender\":1,\"grade\":\"3\",\"classTh\":null}]";
-        Student student = new Student();
-        student.setId(0L);
-        student.setName("Jess");
-        student.setGender(1);
-        student.setGrade("3");
+//        String json = "{\"id\":0,\"name\":\"Jess\",\"gender\":1,\"grade\":\"3\",\"classTh\":null,\"code\":\"3\"}";
+//        String json = "\"id\":0,\"name\":\"Jess\",\"gender\":1,\"grade\":\"3\",\"classTh\":null,\"code\":\"3\"}";
+        String json = "{\"fhzt\":\"200\",\"orgname\":\"咸阳渭城中学\",\"level\":\"1\",\"taskcode\":\"20200618\",\"orgcodeentify\":\"123\",\"remark\":null,\"harddata\":null,\"id\":\"02660b0ec1cd429d940b0eea1696f837\",\"schoolcode\":\"610001\",\"schoolname\":\"咸阳渭城中学\",\"account\":\"admin\"}";
+//        String json = "{\"id\":0,\"name\":\"Jess\",\"gender\":1,\"grade\":\"3\"}";
+//        Student student = new Student();
+//        student.setId(0L);
+//        student.setName("Jess");
+//        student.setGender(1);
+//        student.setGrade("3");
 //        student.setClassTh("2");
 //        student.setIsUpload("");
-        GsonBuilder builder = new GsonBuilder()
+        Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .serializeNulls();
+//                .serializeNulls()
+                .create();
 //        builder.serializeNulls();
 //        String json = builder.create().toJson(student);
 //        JsonParser jsonParser = new JsonParser();
@@ -252,46 +297,75 @@ public class ConcurrentTest {
 //            System.out.println(bean.getName());
 //        }
 //        System.out.println(json);
-        List<Student> list = builder.create().fromJson(response, new TypeToken<List<Student>>() {
-        }.getType());
+//        List<Student> list = gson.fromJson(response, new TypeToken<List<Student>>() {}.getType());
 //        List<Student> list = null;
 //        for (Student s : list) {
 //            System.out.println(s.getName());
 //        }
-        try {
-            Class<?> clazz = Class.forName("java.lang.Integer");
-            System.out.println(clazz.getName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
+//        System.out.println(System.currentTimeMillis());
+
+//        LoginBean loginBean = new Gson().fromJson(json, LoginBean.class);
+//        if (loginBean != null && "200".equals(loginBean.getFhzt())) {
+//            System.out.println(loginBean.getTaskcode());
+//        }
+//        try {
+//            Student student = gson.fromJson(json, Student.class);
+//            System.out.println(student.toString());
+//        } catch (JsonSyntaxException e) {
+//            System.out.println("json格式不对");
+//        }
+//        try {
+//            Class<?> clazz = Class.forName("java.lang.Integer");
+//            System.out.println(clazz.getName());
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
+    private static void testTemp() {
+        for (int j = 0; j < 50; j++) {
+            System.out.println(randomTemp());
+            try {
+                Thread.sleep(2_000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static String randomTemp() {
+        float temp = new Random().nextFloat() * 1.3f + 36;
+
+        return format.format(temp);
+    }
+
     private static void testSocket() {
-        String str = "[{\"SN\":\"54:E1:AD:F1:8E:D5\",\"aim\":\"download_sfrz\",\"version\":\"0.1\"}]";
+        String str = "[{\"SN\":\"18:93:7F:78:70:96\",\"aim\":\"download_sfrz\",\"version\":\"0.1\"}]";
         String str2 = "[{\"SN\":\"54:E1:AD:F1:8E:D5\",\"aim\":\"upload_sfrz_result\",\"version\":\"0.1\"},{\"devSN\":\"75862851220127035165\",\"zwtp\":\"\",\"rlppl\":\"0.0\",\"rlzp\":\"\",\"rzfs\":\"123\",\"rzjg\":\"2\",\"rzsj\":\"2019-06-26 09:57:15\",\"sfzzp\":\"\",\"zjhm\":\"410523198611280035\",\"zwppl\":\"0.0\"}]\n";
         String str1 = "[{\"SN\":\"54:E1:AD:F1:8E:D5\",\"aim\":\"upload_sfrz_result\",\"version\":\"0.1\"},{\"zjhm\":\"610124198810271029\",\"rzsj\":\"2019-07-08 08:25:25\",\"rzfs\":\"12\",\"rzjg\":\"1\",\"devSN\":\"\",\"zwppl\":\"\", \"rlppl\":\"0.36\",\"rlzp\":\"\",\"zwtp\":\"\",\"sfzzp\":\"\"}]";
         Socket client = null;
         try {
             client = new Socket();
-            SocketAddress address = new InetSocketAddress("222.91.163.154", 12788);
+            SocketAddress address = new InetSocketAddress("222.91.163.154", 12789);
 //            SocketAddress address = new InetSocketAddress("192.168.10.101", 8888);
             client.connect(address, 3000);
             if (client.isConnected()) System.out.println("连接成功");
-//            client.setSoTimeout(5_000);
-//            //构建IO
-//            InputStream is = client.getInputStream();
-//            OutputStream os = client.getOutputStream();
-//
-//            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
-//            //向服务器端发送一条消息
-//            bw.write(str2 + "\r\n");
-//            bw.flush();
-//
-//            //读取服务器返回的消息
-//            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-//            String mess = br.readLine();
-//            System.out.println("服务器："+mess);
+            client.setSoTimeout(5_000);
+            //构建IO
+            InputStream is = client.getInputStream();
+            OutputStream os = client.getOutputStream();
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+            //向服务器端发送一条消息
+            bw.write(str + "\r\n");
+            bw.flush();
+
+            //读取服务器返回的消息
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String mess = br.readLine();
+            System.out.println("服务器："+mess);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -304,6 +378,63 @@ public class ConcurrentTest {
                 }
             }
         }
+    }
+
+    private static void removeChinese(String str) {
+
+        String REGEX_CHINESE = "[^(0-9)]";
+
+        String string = str.replaceAll(REGEX_CHINESE, "");
+        System.out.println(string);
+    }
+
+    private static void testDate() {
+
+        List<String> list = new ArrayList<>();
+        list.add("2020-07-07 09:00:00");
+        list.add("2020-07-10 11:00:00");
+        list.add("2020-07-10 15:30:00");
+        list.add("2020-07-09 15:30:00");
+        list.add("2020-07-09 11:00:00");
+        list.add("2020-07-09 08:00:00");
+        list.add("2020-07-10 08:00:00");
+        list.add("2020-07-07 15:00:00");
+        list.add("2020-07-08 09:00:00");
+        list.add("2020-07-08 09:00:00");
+        list.add("2020-07-08 09:00:00");
+        list.add("2020-07-08 09:00:00");
+        list.add("2020-07-08 09:00:00");
+        list.add("2020-07-08 09:00:00");
+        list.add("2020-07-08 15:00:00");
+        list.add("2020-07-07 15:00:00");
+        list.add("2020-07-07 15:00:00");
+        list.add("2020-07-07 15:00:00");
+        list.add("2020-07-07 15:00:00");
+        list.add("2020-07-07 15:00:00");
+        list.add("2020-07-07 09:00:00");
+        list.add("2020-07-07 15:00:00");
+        list.add("2020-07-07 09:00:00");
+
+        long current = System.currentTimeMillis();
+        String realBegin = "";
+        Date realDate = new Date(current);
+        boolean first = true;
+        for (String time : list) {
+            Date date = DateUtil.getDateByFormat(time, "yyyy-MM-dd HH:mm:ss");
+            if (date.getTime() > current) {
+                if (first) {
+                    realBegin = time;
+                    realDate = DateUtil.getDateByFormat(realBegin, "yyyy-MM-dd HH:mm:ss");
+                    first = false;
+                } else if (date.getTime() < realDate.getTime()){
+                    realBegin = time;
+                    realDate = DateUtil.getDateByFormat(realBegin, "yyyy-MM-dd HH:mm:ss");
+                }
+
+            }
+        }
+
+        System.out.println("current time:" + realBegin);
     }
 
     private static void testSwitch() {
@@ -422,4 +553,114 @@ public class ConcurrentTest {
 
 
     }
+
+    public class LoginBean {
+
+        /**
+         * fhzt : 200
+         * orgname : 竞业达
+         * level : 1
+         * taskcode :
+         * orgcodeentify : 86
+         * remark : null
+         * id : aded89d8a94540f2904df622722d339a
+         * schoolcode : 86
+         * schoolname : 竞业达
+         * account : jyd
+         */
+
+        private String fhzt;
+        private String orgname;
+        private String level;
+        private String taskcode;
+        private String orgcodeentify;
+        private String remark;
+        private String id;
+        private String schoolcode;
+        private String schoolname;
+        private String account;
+
+
+        public String getFhzt() {
+            return fhzt;
+        }
+
+        public void setFhzt(String fhzt) {
+            this.fhzt = fhzt;
+        }
+
+        public String getOrgname() {
+            return orgname;
+        }
+
+        public void setOrgname(String orgname) {
+            this.orgname = orgname;
+        }
+
+        public String getLevel() {
+            return level;
+        }
+
+        public void setLevel(String level) {
+            this.level = level;
+        }
+
+        public String getTaskcode() {
+            return taskcode;
+        }
+
+        public void setTaskcode(String taskcode) {
+            this.taskcode = taskcode;
+        }
+
+        public String getOrgcodeentify() {
+            return orgcodeentify;
+        }
+
+        public void setOrgcodeentify(String orgcodeentify) {
+            this.orgcodeentify = orgcodeentify;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getSchoolcode() {
+            return schoolcode;
+        }
+
+        public void setSchoolcode(String schoolcode) {
+            this.schoolcode = schoolcode;
+        }
+
+        public String getSchoolname() {
+            return schoolname;
+        }
+
+        public void setSchoolname(String schoolname) {
+            this.schoolname = schoolname;
+        }
+
+        public String getAccount() {
+            return account;
+        }
+
+        public void setAccount(String account) {
+            this.account = account;
+        }
+    }
+
+
 }

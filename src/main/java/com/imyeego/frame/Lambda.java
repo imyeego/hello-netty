@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 public class Lambda {
 
-    public int s = 1;
+    public static int s = 1;
     public static final String ss = "np";
 
     static {
@@ -13,7 +13,8 @@ public class Lambda {
     }
 
     public static void main(String[] args) {
-//        System.out.println(ss);
+        System.out.println(ss);
+//        System.out.println(s);
 //        Strategy card = new VerifyWithCard();
 //        card.skip();
 //        card.next();
@@ -29,22 +30,22 @@ public class Lambda {
 //                timer.cancel();
 //            }
 //        }, 5000);
-        List<String> list = new ArrayList<>();
-        list.add("1");
-        list.add("11");
-        list.add("22");
-        list.add("02");
-        list.add("8");
-        list.add("07");
-        list.add("3");
-        list.add("256");
-        Collections.sort(list, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return Integer.parseInt(o1) - Integer.parseInt(o2);
-            }
-        });
-        list.stream().forEach(System.out::println);
+//        List<String> list = new ArrayList<>();
+//        list.add("1");
+//        list.add("11");
+//        list.add("22");
+//        list.add("02");
+//        list.add("8");
+//        list.add("07");
+//        list.add("3");
+//        list.add("256");
+//        Collections.sort(list, new Comparator<String>() {
+//            @Override
+//            public int compare(String o1, String o2) {
+//                return Integer.parseInt(o1) - Integer.parseInt(o2);
+//            }
+//        });
+//        list.stream().forEach(System.out::println);
     }
 
 

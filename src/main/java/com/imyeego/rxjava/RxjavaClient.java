@@ -1,16 +1,34 @@
 package com.imyeego.rxjava;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.LockSupport;
 
 public class RxjavaClient {
 
     private static int LENGTH = 20;
     private static ExecutorService service = Executors.newCachedThreadPool();
+
+    //密钥
+    private static String pwd = "CSJJNYTQV186EPZA";
+    private static String alg = "AES/CBC/pkcs5padding";
+    //偏移量
+    private static String offset = "OM2NRXJABEFX3LXA";
 
     public static void main(String[] args) {
 //        List<Integer> list = new LinkedList<>();
@@ -23,13 +41,297 @@ public class RxjavaClient {
 //        System.out.println("----------------------------------");
 //        just(list);
 //        equals();
-        schedulers();
+//        schedulers();
 //        List<String> list = Arrays.asList("五 文综", "二 数学", "一 语文", "四 理综","三 英语", "十二次","56");
 //        Collections.sort(list, (Comparator.comparingInt(RxjavaClient::chineseNum2Int)));
 //        list.forEach(System.out::println);
 
 //        String s = "第十一场次";
 //        System.out.println(chineseNum2Int(s));
+//        try {
+//            System.out.println(aesEncode("jingyeda12"));
+//        } catch (GeneralSecurityException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        testJ();
+
+    }
+
+    private static void testJ() {
+        String j = "[\n" +
+                "        [\n" +
+                "            \"1\",\n" +
+                "            \"汉族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"2\",\n" +
+                "            \"蒙古族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"3\",\n" +
+                "            \"回族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"4\",\n" +
+                "            \"藏族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"5\",\n" +
+                "            \"维吾尔族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"6\",\n" +
+                "            \"苗族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"7\",\n" +
+                "            \"彝族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"8\",\n" +
+                "            \"壮族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"9\",\n" +
+                "            \"布依族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"10\",\n" +
+                "            \"朝鲜族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"11\",\n" +
+                "            \"满族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"12\",\n" +
+                "            \"侗族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"13\",\n" +
+                "            \"瑶族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"14\",\n" +
+                "            \"白族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"15\",\n" +
+                "            \"土家族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"16\",\n" +
+                "            \"哈尼族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"17\",\n" +
+                "            \"哈萨克族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"18\",\n" +
+                "            \"傣族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"19\",\n" +
+                "            \"黎族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"20\",\n" +
+                "            \"傈僳族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"21\",\n" +
+                "            \"佤族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"22\",\n" +
+                "            \"畲族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"23\",\n" +
+                "            \"高山族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"24\",\n" +
+                "            \"拉祜族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"25\",\n" +
+                "            \"水族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"26\",\n" +
+                "            \"东乡族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"27\",\n" +
+                "            \"纳西族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"28\",\n" +
+                "            \"景颇族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"29\",\n" +
+                "            \"柯尔克孜族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"30\",\n" +
+                "            \"土族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"31\",\n" +
+                "            \"达斡尔族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"32\",\n" +
+                "            \"仫佬族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"33\",\n" +
+                "            \"羌族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"34\",\n" +
+                "            \"布朗族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"35\",\n" +
+                "            \"撒拉族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"36\",\n" +
+                "            \"毛南族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"37\",\n" +
+                "            \"仡佬族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"38\",\n" +
+                "            \"锡伯族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"39\",\n" +
+                "            \"阿昌族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"40\",\n" +
+                "            \"普米族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"41\",\n" +
+                "            \"塔吉克族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"42\",\n" +
+                "            \"怒族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"43\",\n" +
+                "            \"乌孜别克族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"44\",\n" +
+                "            \"俄罗斯族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"45\",\n" +
+                "            \"鄂温克族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"46\",\n" +
+                "            \"德昂族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"47\",\n" +
+                "            \"保安族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"48\",\n" +
+                "            \"裕固族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"49\",\n" +
+                "            \"京族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"50\",\n" +
+                "            \"塔塔尔族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"51\",\n" +
+                "            \"独龙族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"52\",\n" +
+                "            \"鄂伦春族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"53\",\n" +
+                "            \"赫哲族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"54\",\n" +
+                "            \"门巴族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"55\",\n" +
+                "            \"珞巴族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"56\",\n" +
+                "            \"基诺族\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"59\",\n" +
+                "            \"穿青人\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"95\",\n" +
+                "            \"摩梭人\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"97\",\n" +
+                "            \"其他\"\n" +
+                "        ],\n" +
+                "        [\n" +
+                "            \"98\",\n" +
+                "            \"外国血统中国籍人士\"\n" +
+                "        ]\n" +
+                "    ]";
+
+        List<List<String>> lists = new Gson().fromJson(j, new TypeToken<List<List<String>>>(){}.getType());
+        for (List<String> list : lists) {
+            System.out.println(list.get(1) + " ," + (list.get(0).length() == 1 ? "0" + list.get(0):list.get(0)));
+        }
+    }
+
+    public static String aesEncode(String content)
+            throws GeneralSecurityException,
+            IOException {
+        SecretKey key = new SecretKeySpec(pwd.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance(alg);
+        IvParameterSpec iv = new IvParameterSpec(offset.getBytes());
+        cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+        byte[] byte_encode = content.getBytes(StandardCharsets.UTF_8);
+        byte[] byte_AES = cipher.doFinal(byte_encode);
+        return parseByte2HexStr(byte_AES);
+    }
+
+    public static String parseByte2HexStr(byte buf[]) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < buf.length; i++) {
+            String hex = Integer.toHexString(buf[i] & 0xFF);
+            if (hex.length() == 1) {
+                hex = '0' + hex;
+            }
+            sb.append(hex.toUpperCase());
+        }
+        return sb.toString();
     }
 
 
@@ -88,6 +390,7 @@ public class RxjavaClient {
         return result;
 
     }
+
 
     private static int chineseNum2Int(String s) {
         List<Character> c0 = Arrays.asList('零','一','二','三','四','五','六','七','八','九');
@@ -176,6 +479,8 @@ public class RxjavaClient {
         String c = new String("ab");
         String d = new String("ab");
         System.out.println(c == d);
+        System.out.println(a == b);
+        System.out.println(a == c);
         System.out.println(c.equals(d));
     }
 

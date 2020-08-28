@@ -5,7 +5,7 @@ public class Test {
         Promise.of(() -> {
             Thread.sleep(3000);
             return "777";
-            })
+        })
                 .then(System.out::println)
                 .map(Integer::parseInt)
                 .then(s -> {
@@ -18,4 +18,6 @@ public class Test {
                 })
                 .make();
     }
+
+
 }
