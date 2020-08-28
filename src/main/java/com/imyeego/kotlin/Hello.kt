@@ -230,6 +230,7 @@ fun testGson() {
     var json = "{\"id\":1,\"name\":null,\"age\":18}"
     var student = Student(1, "liuzhao", 18, 3, 2)
 //    var s = Gson().toJson(student)
+
     var student1 = Gson().fromJson(json, Student::class.java)
     println(student1.toString())
 //    var gsonBuilder = GsonBuilder()
@@ -245,8 +246,8 @@ fun testNullCheck(): Unit {
     var s: String? = null
 
     println(s?.length)
-    println(s?.length?:0)
-    println(s!!.length)
+//    println(s?.length?:0)
+//    println(s!!.length)
 
 
     if (s != null) {

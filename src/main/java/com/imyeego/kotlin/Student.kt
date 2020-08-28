@@ -4,9 +4,9 @@ import com.google.gson.annotations.Expose
 
 data class Student(
 
-        private var id: Int,
-        private var name: String,
-        private var age: Int,
-        var grade: Int,
-        var classTh: Int
+        var id: Int = 0,
+        var name: String = "",
+        var age: Int = 0,
+        var grade: Int = 0,
+        var classTh: Int = 0
 )
