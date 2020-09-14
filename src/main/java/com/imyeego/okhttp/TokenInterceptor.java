@@ -48,7 +48,7 @@ public class TokenInterceptor implements Interceptor {
         return response;
     }
 
-    private String accessToken() {
+    private synchronized String accessToken() {
         String tokenString = OkHttpUtil.getInstance(5).get("http://localhost:8080/accessToken/1");
         if (isJson(tokenString)) {
             Token token = new Gson().fromJson(tokenString, Token.class);
