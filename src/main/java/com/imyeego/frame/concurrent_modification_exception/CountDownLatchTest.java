@@ -7,33 +7,36 @@ public class CountDownLatchTest {
     public static final int RUNNER_COUNT = 10;
 
     public static void main(String[] args) throws InterruptedException{
-//        final CountDownLatch begin = new CountDownLatch(1);
-//        final CountDownLatch end = new CountDownLatch(RUNNER_COUNT);
-//
-//        final ExecutorService service = Executors.newFixedThreadPool(10);
-//
-//        for (int i = 0; i < RUNNER_COUNT; i++) {
-//            int num = i + 1;
-//            service.execute(() -> {
-//                try {
-////                    begin.await();
-//                    Thread.sleep((long)(Math.random() * 10_000));
-//                    System.out.println("No." + num + " arrived!");
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                } finally {
-//                    end.countDown();
-//                }
-//            });
-//
-//        }
-//        System.out.println("Game started!");
-////        begin.countDown();
-//        end.await();
-//        System.out.println("Game over!");
-//        service.shutdown();
-        testParallel();
+//        testCountDownLatch();
+//        testParallel();
+        testCyclicBarrier();
         
+    }
+
+
+    private static void testCountDownLatch() throws InterruptedException{
+        final CountDownLatch end = new CountDownLatch(RUNNER_COUNT);
+
+        final ExecutorService service = Executors.newFixedThreadPool(10);
+
+        for (int i = 0; i < RUNNER_COUNT; i++) {
+            int num = i + 1;
+            service.execute(() -> {
+                try {
+                    Thread.sleep((long)(Math.random() * 10_000));
+                    System.out.println("No." + num + " arrived!");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    end.countDown();
+                }
+            });
+
+        }
+        System.out.println("Game started!");
+        end.await();
+        System.out.println("Game over!");
+        service.shutdown();
     }
 
     private static void testParallel() {
@@ -76,4 +79,32 @@ public class CountDownLatchTest {
 //            t = future.get();
 //        }
 //    }
+
+
+    static void testCyclicBarrier() {
+        Object object = new Object();
+        object.hashCode();
+        final ExecutorService service = Executors.newFixedThreadPool(10);
+        System.out.println("Game started!");
+
+        final CyclicBarrier cyclicBarrier = new CyclicBarrier(RUNNER_COUNT, () -> {
+            System.out.println("Game over!");
+            service.shutdown();
+        });
+
+        for (int i = 0; i < RUNNER_COUNT; i++) {
+            int num = i + 1;
+            service.execute(() -> {
+                try {
+                    Thread.sleep((long)(Math.random() * 10_000));
+                    System.out.println("No." + num + " arrived!");
+                    cyclicBarrier.await();
+
+                } catch (InterruptedException | BrokenBarrierException e) {
+                    e.printStackTrace();
+                }
+            });
+
+        }
+    }
 }

@@ -81,6 +81,17 @@ public class ConcurrentTest {
 //        }
 //        System.out.println(StaticTest.i);
 //        testMerge();
+
+//        System.out.println(hide("114699362", 3, 12));
+    }
+
+    public static String hide(String source, int start, int length) {
+        char[] c = source.toCharArray();
+        for (int i = start; i < start + length; i ++) {
+            c[i] = '*';
+        }
+
+        return new String(c);
     }
 
     private static void testReflection() {
@@ -225,10 +236,33 @@ public class ConcurrentTest {
     }
 
     private static void testThreadPool() {
-        ExecutorService frExecutor = new ThreadPoolExecutor(1, 5, 0, TimeUnit.MILLISECONDS, queue);
+        /*ExecutorService frExecutor = new ThreadPoolExecutor(1, 5, 0, TimeUnit.MILLISECONDS, queue);
         while (true) {
             frExecutor.execute(new FaceRunnable(++i));
-        }
+        }*/
+
+//        ExecutorService service = Executors.newFixedThreadPool(2);
+//        service.execute(() -> {
+//            System.out.println("liuzhao");
+//            System.out.println(Thread.currentThread().toString());
+//            System.out.println(service.toString());
+//        });
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        service.execute(() -> {
+//            System.out.println("liuzhao");
+//            System.out.println(Thread.currentThread().toString());
+//            System.out.println(service.toString());
+//
+//        });
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        System.out.println(uuid);
+        System.out.println(uuid.length());
+
     }
 
     static class FaceRunnable implements Runnable {
@@ -325,18 +359,31 @@ public class ConcurrentTest {
     }
 
     private static void testTemp() {
-        for (int j = 0; j < 50; j++) {
-            System.out.println(randomTemp());
-            try {
-                Thread.sleep(2_000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//        for (int j = 0; j < 50; j++) {
+//            System.out.println(randomTemp());
+//            try {
+//                Thread.sleep(2_000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+
+//        System.out.println(String.format("%%%s%%", "liu zhao"));
+//        System.out.println(new Date().getSeconds());
+
+//        System.out.println(randomTemp());
+
+        Set<String> set = Collections.singleton("2");
+        set.add("1");
+        set.add("3");
+        for (String s : set) {
+            System.out.println(s);
         }
     }
 
+
     private static String randomTemp() {
-        float temp = new Random().nextFloat() * 1.3f + 36;
+        float temp = new Random().nextFloat() * 0.8f + 36f;
 
         return format.format(temp);
     }
