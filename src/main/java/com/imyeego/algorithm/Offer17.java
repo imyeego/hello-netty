@@ -80,6 +80,23 @@ public class Offer17 {
         return p;
     }
 
+    private static ListNode mergeByRecursive(ListNode root1, ListNode root2) {
+        if (root1 == null) return root2;
+        else if (root2 == null) return root1;
+
+        ListNode head;
+        if (root1.val >= root2.val) {
+
+            head = root2;
+            head.next = mergeByRecursive(root1, root2.next);
+        } else {
+            head = root1;
+            head.next = mergeByRecursive(root1.next, root2);
+        }
+
+        return head;
+    }
+
     /**
      * from LeetCode#23
      * @param lists
@@ -94,6 +111,8 @@ public class Offer17 {
             else if (o1.val == o2.val) return 0;
             else return 1;
         });
+
+        PriorityQueue<ListNode> queue1 = new PriorityQueue<>();
         for (ListNode node : lists) {
             if (node != null) queue.add(node);
         }

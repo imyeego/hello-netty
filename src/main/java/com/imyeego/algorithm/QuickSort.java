@@ -12,11 +12,22 @@ public class QuickSort {
 
     public static void main(String[] args) {
         int[] array = {3, 6, 1, 12, 7, 4, 67, 3, 15, 32, 9};
-        quickSortIteratorly(array, 0, array.length - 1);
-//        swap(array, 1, 4);
+//        quickSortIteratorly(array, 0, array.length - 1);
+//        quickSort(array, 0, array.length - 1);
         for (int num : array) {
             System.out.print(num + ", ");
         }
+        System.out.println("");
+        swap(array, 1, 5);
+
+        for (int num : array) {
+            System.out.print(num + ", ");
+        }
+
+//        int a = 6, b = 4;
+//
+//        System.out.println((a^b) == (b^a));
+
     }
 
     private static void quickSort(int[] array, int left, int right) {
@@ -77,6 +88,12 @@ public class QuickSort {
         }
         array[i] = temp;
         return i;
+    }
+
+    static void swap(int[] array, int i, int j) {
+        array[i] = array[i] ^ array[j];
+        array[j] = array[i] ^ array[j];
+        array[i] = array[i] ^ array[j];
     }
 
 }

@@ -24,6 +24,8 @@ public class Offer20 {
 
         List<Integer> result = printMatrix(v);
 
+
+
         for (int i : result){
             System.out.print(i + ", ");
         }

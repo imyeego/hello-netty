@@ -59,7 +59,7 @@ public class Code9 {
             right = right.next.next;
             if (right == null) temp.next = null;
         }
-        ListNode re = Offer16.reverseList(left);
+        ListNode re = Offer16.reverseByIterator(left);
         while (root != null && re != null) {
             if (root.val != re.val) return false;
             root = root.next;

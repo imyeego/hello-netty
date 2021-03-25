@@ -240,6 +240,8 @@ fun testGson() {
 //    val s = gsonBuilder.create().toJson(student)
 //    println(ob.toString())
 //    println(s)
+
+
 }
 
 fun testNullCheck(): Unit {
@@ -250,9 +252,6 @@ fun testNullCheck(): Unit {
 //    println(s!!.length)
 
 
-    if (s != null) {
-        println(s.length)
-    }
 }
 
 fun testLambda(): Int {

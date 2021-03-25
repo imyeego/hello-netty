@@ -1,5 +1,7 @@
 package com.imyeego.algorithm;
 
+import java.util.HashMap;
+
 /**
  * @Authur: liuzhao
  * @Date: 2019/2/5 0005 23:16
@@ -22,34 +24,44 @@ public class Offer16 {
         node4.next = node5;
         node5.next = null;
 
-//        ListNode node = reverseList(node1);
-        ListNode node = reverseBetween(node1, 3, 6);
+//        ListNode node = reverseByRecursive(node1);
+        ListNode node = reverseByIterator(node1);
+//        ListNode node = reverseBetween(node1, 3, 6);
         while (node != null){
             System.out.println(node.val);
             node = node.next;
         }
+
     }
 
 
-    static ListNode reverseList(ListNode head){
+    static ListNode reverseByIterator(ListNode head) {
         if (head == null) {
             return null;
         }
-        ListNode pNode = head, nNode, pNext = null;
+        ListNode pre = null, cur = head,next = null;
+        while (cur != null) {
+            next = cur.next;
+            cur.next = pre;
 
-        nNode = pNode;
-        pNode = pNode.next;
-        nNode.next = null;
+            pre = cur;
+            cur = next;
 
-        while (pNode != null){
-            pNext = pNode.next; // save the next node, avoid missing
-
-            pNode.next = nNode;
-            nNode = pNode;
-            pNode = pNext; // move the pointer
         }
 
-        return nNode;
+
+        return pre;
+    }
+
+    static ListNode reverseByRecursive(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+
+        ListNode last = reverseByRecursive(head.next);
+        head.next.next = head;
+        head.next = null;
+        return last;
     }
 
     private static ListNode reverseBetween(ListNode head, int m, int n) {

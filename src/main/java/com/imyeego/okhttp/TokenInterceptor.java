@@ -3,9 +3,7 @@ package com.imyeego.okhttp;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -33,7 +31,7 @@ public class TokenInterceptor implements Interceptor {
         }
         request.newBuilder().addHeader("Authorization", token).build();
         Response response = chain.proceed(request);
-        if (response.code() == 401) {
+        if (isTokenExpire(response)) {
             System.out.println("本地token过期");
 
             token = refreshToken();
@@ -48,8 +46,26 @@ public class TokenInterceptor implements Interceptor {
         return response;
     }
 
+    private boolean isTokenExpire(Response response) {
+        ResponseBody body = response.body();
+        if (body != null){
+            try {
+                String resp = body.string();
+                BaseResult model = new Gson().fromJson(resp, BaseResult.class);
+                //4061是与后台商量的token失效后的错误码，具体应根据自己的项目决定
+                if(model.getCode() == 401) {
+                    return true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
     private synchronized String accessToken() {
-        String tokenString = OkHttpUtil.getInstance(5).get("http://localhost:8080/accessToken/1");
+        String tokenString = OkHttpUtil.getInstance(5).get("http://localhost:8088/accessToken/1");
         if (isJson(tokenString)) {
             Token token = new Gson().fromJson(tokenString, Token.class);
             return token.getToken();
@@ -58,7 +74,7 @@ public class TokenInterceptor implements Interceptor {
     }
 
     private String refreshToken() {
-        String tokenString = OkHttpUtil.getInstance(5).get("http://localhost:8080/refreshToken");
+        String tokenString = OkHttpUtil.getInstance(5).get("http://localhost:8088/refreshToken");
         System.out.println("refresh token response:" + tokenString);
         if (isJson(tokenString)) {
             Token token = new Gson().fromJson(tokenString, Token.class);
