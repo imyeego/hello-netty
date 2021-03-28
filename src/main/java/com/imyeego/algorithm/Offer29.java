@@ -34,10 +34,15 @@ public class Offer29 {
         return res;
     }
 
+    /**
+     * 思想哨兵
+     * @param array
+     * @return
+     */
     private static int findMoreThanHalf1(int[] array) {
         if (array.length == 0) return 0;
         if (array.length == 1) return array[0];
-        int res = 0, count = 1;
+        int res = array[0], count = 1;
         for (int i = 1; i < array.length; i++) {
             if (array[i] == res) count ++;
             else count --;
