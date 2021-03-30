@@ -9,6 +9,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
 
 /**
  * @authur : liuzhao
@@ -24,26 +25,33 @@ public class RSADemo {
 
     public static void main(String[] args) {
 
-        String data = "hello liuzhao";
+        int length = 32;
+        int num = 100;
 
-        try {
-            KeyPair keyPair = generateRSAKeyPair(1024);
+        System.out.println(num%length);
+        System.out.println(num&(length - 1));
 
-            byte[] publicKey = getPublicKey(keyPair);
-            System.out.println("加密的公钥 " + encryptBASE64(publicKey));
 
-            byte[] privateKey = getPrivateKey(keyPair);
-
-            byte[] encrypted = encryptByPublicKey(data.getBytes(), publicKey);
-
-            System.out.println("加密后的数据 " + encryptBASE64(encrypted));
-
-            byte[] originalBytes = decryptByPrivateKey(encrypted, privateKey);
-            System.out.println("解密后的数据 " + new String(originalBytes));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        String data = "hello liuzhao";
+//
+//        try {
+//            KeyPair keyPair = generateRSAKeyPair(1024);
+//
+//            byte[] publicKey = getPublicKey(keyPair);
+//            System.out.println("加密的公钥 " + encryptBASE64(publicKey));
+//
+//            byte[] privateKey = getPrivateKey(keyPair);
+//
+//            byte[] encrypted = encryptByPublicKey(data.getBytes(), publicKey);
+//
+//            System.out.println("加密后的数据 " + encryptBASE64(encrypted));
+//
+//            byte[] originalBytes = decryptByPrivateKey(encrypted, privateKey);
+//            System.out.println("解密后的数据 " + new String(originalBytes));
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 
