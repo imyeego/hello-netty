@@ -25,8 +25,8 @@ public class Offer16 {
         node5.next = null;
 
 //        ListNode node = reverseByRecursive(node1);
-        ListNode node = reverseByIterator(node1);
-//        ListNode node = reverseBetween(node1, 3, 6);
+//        ListNode node = reverseByIterator(node1);
+        ListNode node = reverseBetween1(node1, 2, 6);
         while (node != null){
             System.out.println(node.val);
             node = node.next;
@@ -102,6 +102,49 @@ public class Offer16 {
             return eNode;
         }
         return head;
+    }
+
+
+    static ListNode reverseBetween1(ListNode head, int m, int n) {
+        if (head == null) {
+            return null;
+        }
+        if (m < 1 || m > n) {
+            return null;
+        }
+
+        ListNode start = head, end = null, prev = null, after = null;
+        ListNode cur = head;
+        int count = 0;
+        while (cur != null) {
+            count ++;
+            if (count == m - 1) prev = cur;
+            if (count == m) start = cur;
+            if (count == n) end = cur;
+            if (count == n + 1) {
+                after = cur;
+                break;
+            }
+            if (end == null && cur.next == null) end = cur; // 指向尾节点
+            cur = cur.next;
+        }
+        reverse(start, end);
+        if (prev != null) prev.next = end;
+        start.next = after;
+        return m == 1 ? end : head;
+    }
+
+
+    static void reverse(ListNode start, ListNode end) {
+        ListNode prev = null, cur = start, after;
+
+        while (cur != null) {
+            after = cur.next;
+            cur.next = prev;
+            if (cur == end) break;
+            prev = cur;
+            cur = after;
+        }
     }
 
 //    static class ListNode{

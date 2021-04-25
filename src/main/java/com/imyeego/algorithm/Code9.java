@@ -48,16 +48,20 @@ public class Code9 {
     /**
      * LeetCode#234
      * @param root
+     *
+     * 1->2->3->4->5->6
+     *
+     *
      * @return
      */
     public static boolean isPalindrome(ListNode root) {
         if (root == null) return true;
         ListNode left = root, right = root, temp = root;
         while (right != null && right.next != null) {
-            if (right.next.next == null) temp = left;
+            if (right.next.next == null) temp = left; // 当节点数为偶数时
             left = left.next;
             right = right.next.next;
-            if (right == null) temp.next = null;
+            if (right == null) temp.next = null; // 当节点数为偶数时
         }
         ListNode re = Offer16.reverseByIterator(left);
         while (root != null && re != null) {
